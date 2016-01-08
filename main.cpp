@@ -75,7 +75,11 @@ struct move{
 	int arrowx, arrowy;
 };
 
-char list_move(int DP[10][10], int player){
-
-
+ std::vector<move> list_move(int DP[10][10], int player){
+	std::vector<move> valid;
+	FOR(i,4){
+		move mymove = {queen};
+a.push_back(mypoint);
+	}
+	return valid;
 }
