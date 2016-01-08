@@ -7,7 +7,34 @@ using namespace std;
 #define MAX(a,b) ( (a) > (b) ? (a) : (b))
 #define MIN(a,b) ( (a) < (b) ? (a) : (b))
 
+
+
+struct pos {
+    int x;int y;
+    pos(){};
+    pos( int i, int r ) : x(i), y(r) {}
+    bool operator=( const myclass & d ) const {
+       return ((x==d.x)&&(y==d.y));
+    }
+};
+
 int DP[10][10];
+pos queen[2][4];
+
+
+// int bfs()
+
+// int territory(){
+
+// 	FOR(i,10){
+// 		FOR(j,10){
+// 			if(DP[i][j] !=0){
+// 				continue;
+// 			}
+
+// 		}
+// 	}
+// }
 
 
 int mobility(){
@@ -53,18 +80,29 @@ int mobility(){
 int evaluator(){
 	int ans = 0;
 	ans = ans+mobility();
+
 }
 
 int main(){
 	int player;
+	int qcount1=0;
+	int qcount2=0;
 	FOR(i,10){
 		FOR(j,10){
 			scanf("%d",&DP[i][j]);
+			if(DP[i][j]==1){
+				queen[0][qcount1].x=i;
+				queen[0][qcount1].y=j;
+				qcount1++;
+			}
+			if(DP[i][j]==2){
+				queen[1][qcount2].x=i;
+				queen[1][qcount2].y=j;
+				qcount2++;
+			}
 		}
 	}
 	scanf("%d",&player);
-
-
 
 	return 0;
 }
