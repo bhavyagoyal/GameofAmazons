@@ -200,7 +200,6 @@ int territory(){
 				// cout<<" "<<0<<" ";
 			}
 		}
-		cout<<endl;
 	}
 	return count;
 }
@@ -252,6 +251,12 @@ int mobility(){
 // 	ans = ans+mobility();
 
 // }
+void print_step(step a){
+	cerr<<a.old_pos.x<<" "<<a.old_pos.y<<"   " << a.new_pos.x<<" "<<a.new_pos.y<<"   "<<a.arrow.x<<" "<<a.arrow.y<<endl; 
+}
+void print_pos(pos a){
+  cerr<<a.x<<" "<<a.y<<endl;
+}
 
 std::vector<pos> max_limit(pos q){
 	std::vector<pos> limits;
@@ -349,6 +354,7 @@ std::vector<step> list_step(int player){
 		step mystep = step(queen[player-1][i],queen[player-1][i],queen[player-1][i]);
 		int m = mystep.old_pos.x;
 		int n = mystep.old_pos.y;
+		// cerr<<m<<" "<<n<<"ADS"<<endl;
 		std::vector<int> a;
 		a.push_back(m);
 		if(m<9){
@@ -369,9 +375,16 @@ std::vector<step> list_step(int player){
 			FOR(l,b.size()){
 				mystep.new_pos.x = a[k];
 				mystep.new_pos.y = b[l];
+				// cerr<<"NEW"<<endl;
+				// print_pos(mystep.new_pos);
 				if(((a[k]!=mystep.old_pos.x)||(b[l]!=mystep.old_pos.y))&&(DP[a[k]][b[l]]==0))
-				{
+				{	
+					DP[mystep.new_pos.x][mystep.new_pos.y] = player;
+					DP[mystep.old_pos.x][mystep.old_pos.y] = 0;
 					vector<pos> arrows = max_limit(mystep.new_pos);
+					DP[mystep.new_pos.x][mystep.new_pos.y] = 0;
+					DP[mystep.old_pos.x][mystep.old_pos.y] = player;
+					// cerr<<"SIZE:"<<arrows.size()<<endl;
 					FOR(j,arrows.size()){
 						mystep.arrow = arrows[j];
 						valid.push_back(mystep);
@@ -415,12 +428,12 @@ double maxval(double alpha, double beta,int depth,int player)
 	else
 	{
 		vector<step> valid_steps=list_step(player);
-		double curbest =-1;
+		double curbest =INT_MIN;
 		int s=valid_steps.size();
-		int curbestind;
+		int curbestind=0;
 		for(int i=0;i<s;i++)
 		{
-			//cout << "I :"<< i << endl;
+			// cerr << "I :"<< i << endl;
 			implement_step(valid_steps[i],player);
 			double val=minval(alpha,beta,depth-1,(player+1)%2+2*(player%2));
 			if(val>curbest)
@@ -436,6 +449,9 @@ double maxval(double alpha, double beta,int depth,int player)
 				return val;
 			}
 		}
+
+		// cerr<<curbestind<<endl;
+		// print_step(valid_steps[curbestind]);
 		if(depth==DEPTH)
 		{
 			global_step.old_pos=valid_steps[curbestind].old_pos;
@@ -454,9 +470,9 @@ double minval(double alpha, double beta, int depth,int player)
 	else
 	{
 		vector<step> valid_steps=list_step(player);
-		double curbest=10000000;
+		double curbest=INT_MAX;
 		int s=valid_steps.size();
-		int curbestind;
+		int curbestind=0;
 		for(int i=0;i<s;i++)
 		{
 			implement_step(valid_steps[i],player);
@@ -490,12 +506,6 @@ double minval(double alpha, double beta, int depth,int player)
 }
 
 
-void print_step(step a){
-	cout<<a.old_pos.x<<" "<<a.old_pos.y<<"   " << a.new_pos.x<<" "<<a.new_pos.y<<"   "<<a.arrow.x<<" "<<a.arrow.y<<endl; 
-}
-void print_pos(pos a){
-  cout<<a.x<<" "<<a.y<<endl;
-}
 
 int main(){
 	int player;
@@ -524,11 +534,11 @@ int main(){
 	scanf("%d",&player);
 	// cout<<"Player"<<player<<endl;
 	// cout<<territory()<<endl;
-/*	vector<step> a = list_step(1);
-	FOR(i,a.size()){
-		print_step(a[i]);
-	}
-*/
+	// vector<step> a = list_step(1);
+	// FOR(i,a.size()){
+	// 	print_step(a[i]);
+	// }
+	// cerr<<"ADSADS"<<endl;
 	if(player==1)
 		maxval(INT_MIN,INT_MAX,DEPTH,1);
 	else
