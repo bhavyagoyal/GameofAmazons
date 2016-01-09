@@ -10,7 +10,7 @@ using namespace std;
 #define MOD 1000000009 
 #define MAX(a,b) ( (a) > (b) ? (a) : (b))
 #define MIN(a,b) ( (a) < (b) ? (a) : (b))
-#define DEPTH 1
+int DEPTH=1;
 
 struct pos {
     int x;int y;
@@ -218,25 +218,28 @@ int mobility(){
 					sign=1;
 				}
 				std::vector<int> a;
-				a.push_back(i);
+				a.push_back(0);
 				if(i<9){
-					a.push_back(i+1);
+					a.push_back(1);
 				}
 				if(i>0){
-					a.push_back(i-1);
+					a.push_back(-1);
 				}
 				std::vector<int> b;
-				b.push_back(j);
+				b.push_back(0);
 				if(j<9){
-					b.push_back(j+1);
+					b.push_back(1);
 				}
 				if(j>0){
-					b.push_back(j-1);
+					b.push_back(-1);
 				}
 				FOR(k,a.size()){
 					FOR(l,b.size()){
-						if(DP[a[k]][b[l]] == 0){
+						int x=i+a[k],y=j+b[l];
+						while(x>=0 && x<=9 && y>=0 && y<=9 && DP[x][y]==0){
 							count = count+sign;
+							x+=a[k];
+							y+=b[l];
 						}
 					}
 				}
@@ -511,9 +514,12 @@ int main(){
 	int player;
 	int qcount1=0;
 	int qcount2=0;
+	int arrows_cnt=0;
 	FOR(i,10){
 		FOR(j,10){
 			scanf("%d",&DP[i][j]);
+			if(DP[i][j]==-1)
+				arrows_cnt++;
 			if(DP[i][j]==1){
 				queen[0][qcount1].x=i;
 				queen[0][qcount1].y=j;
@@ -526,6 +532,8 @@ int main(){
 			}
 		}
 	}
+	if(arrows_cnt>30)
+		DEPTH=2;
 	// FOR(j,4){
 	// 	cout<<queen[0][j].x<<" "<<queen[0][j].y<<endl; 
 	// 	cout<<queen[1][j].x<<" "<<queen[1][j].y<<endl; 
