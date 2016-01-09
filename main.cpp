@@ -59,7 +59,7 @@ int bfs(pos f, int startplay){
 			}
 		}
 	}
-	return INT_MAX;
+	return -1;
 }
 
 int territory(){
@@ -73,6 +73,9 @@ int territory(){
 			}
 			int a1= bfs(pos(i,j), 0);
 			int a2= bfs(pos(i,j), 1);
+			if(a1==-1 && a2==-1){
+				continue;
+			}
 			if(a1>a2){
 				count++;
 			}
@@ -123,6 +126,7 @@ int mobility(){
 			}
 		}
 	}
+	return count;
 }
 
 // int evaluator(){
