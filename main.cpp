@@ -6,7 +6,7 @@ using namespace std;
 #define MOD 1000000009 
 #define MAX(a,b) ( (a) > (b) ? (a) : (b))
 #define MIN(a,b) ( (a) < (b) ? (a) : (b))
-#define DEPTH 3
+#define DEPTH 2
 
 struct pos {
     int x;int y;
@@ -294,6 +294,7 @@ double maxval(double alpha, double beta,int depth,int player)
 		int curbestind;
 		for(int i=0;i<s;i++)
 		{
+			cout << "I :"<< i << endl;
 			implement_move(valid_moves[i],player);
 			double val=minval(alpha,beta,depth-1,(player+1)%2+2*(player%2));
 			if(val>curbest)
@@ -366,6 +367,9 @@ double minval(double alpha, double beta, int depth,int player)
 void print_move(move a){
 	cout<<a.old_pos.x<<" "<<a.old_pos.y<<"   " << a.new_pos.x<<" "<<a.new_pos.y<<"   "<<a.arrow.x<<" "<<a.arrow.y<<endl; 
 }
+void print_pos(pos a){
+  cout<<a.x<<" "<<a.y<<endl;
+}
 
 int main(){
 	int player;
@@ -394,11 +398,18 @@ int main(){
 	scanf("%d",&player);
 	cout<<"Player"<<player<<endl;
 	// cout<<territory()<<endl;
-	vector<move> a = list_move(1);
+/*	vector<move> a = list_move(1);
 	FOR(i,a.size()){
 		print_move(a[i]);
 	}
-
+*/
+	if(player==1)
+		maxval(INT_MIN,INT_MAX,DEPTH,1);
+	else
+		minval(INT_MIN,INT_MAX,DEPTH,2);
+	printf("%d %d\n",global_move.old_pos.x,global_move.old_pos.y);
+	printf("%d %d\n",global_move.new_pos.x,global_move.new_pos.y);
+	printf("%d %d\n",global_move.arrow.x,global_move.arrow.y);
 	return 0;
 }
 
