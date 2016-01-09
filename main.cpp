@@ -20,7 +20,10 @@ struct pos {
 
 struct move{
 	pos old_pos,new_pos,arrow;
+	move(){};
+	move(pos a, pos b, pos c) : old_pos(a) , new_pos(b) , arrow(c) {}
 };
+
 int DP[10][10];
 pos queen[2][4];
 move global_move;
@@ -220,7 +223,7 @@ std::vector<pos> max_limit(pos q){
 std::vector<move> list_move(int player){
 	std::vector<move> valid;
 	FOR(i,4){
-		move mymove = {queen[player-1][i],queen[player-1][i],queen[player-1][i]};
+		move mymove = move(queen[player-1][i],queen[player-1][i],queen[player-1][i]);
 		int m = mymove.old_pos.x;
 		int n = mymove.old_pos.y;
 		std::vector<int> a;
