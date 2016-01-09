@@ -6,7 +6,7 @@ using namespace std;
 #define MOD 1000000009 
 #define MAX(a,b) ( (a) > (b) ? (a) : (b))
 #define MIN(a,b) ( (a) < (b) ? (a) : (b))
-#define DEPTH 2
+#define DEPTH 1
 
 struct pos {
     int x;int y;
