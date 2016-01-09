@@ -135,39 +135,6 @@ int mobility(){
 
 // }
 
-int main(){
-	int player;
-	int qcount1=0;
-	int qcount2=0;
-	FOR(i,10){
-		FOR(j,10){
-			scanf("%d",&DP[i][j]);
-			if(DP[i][j]==1){
-				queen[0][qcount1].x=i;
-				queen[0][qcount1].y=j;
-				qcount1++;
-			}
-			if(DP[i][j]==2){
-				queen[1][qcount2].x=i;
-				queen[1][qcount2].y=j;
-				qcount2++;
-			}
-		}
-	}
-	// FOR(j,4){
-	// 	cout<<queen[0][j].x<<" "<<queen[0][j].y<<endl; 
-	// 	cout<<queen[1][j].x<<" "<<queen[1][j].y<<endl; 
-	// }
-	cout<<"Now"<<endl;
-	scanf("%d",&player);
-	cout<<"Player"<<player<<endl;
-	cout<<territory()<<endl;
-
-	return 0;
-}
-
-
-
 std::vector<pos> max_limit(pos q){
 	std::vector<pos> limits;
 	pos p =  pos(q.x,q.y);
@@ -253,7 +220,7 @@ std::vector<pos> max_limit(pos q){
 std::vector<move> list_move(int player){
 	std::vector<move> valid;
 	FOR(i,4){
-		move mymove = {queen[player][i],queen[player][i],queen[player][i]};
+		move mymove = {queen[player-1][i],queen[player-1][i],queen[player-1][i]};
 		int m = mymove.old_pos.x;
 		int n = mymove.old_pos.y;
 		std::vector<int> a;
@@ -275,7 +242,7 @@ std::vector<move> list_move(int player){
 		FOR(k,a.size()){
 			FOR(l,b.size()){
 				mymove.new_pos.x = a[k];
-				mymove.new_pos.x = b[l];
+				mymove.new_pos.y = b[l];
 				if(((a[k]!=mymove.old_pos.x)||(b[l]!=mymove.old_pos.y))&&(DP[a[k]][b[l]]==0))
 				{
 					vector<pos> arrows = max_limit(mymove.new_pos);
@@ -394,3 +361,48 @@ double minval(double alpha, double beta, int depth,int player)
 
 	}
 }
+
+
+void print_move(move a){
+	cout<<a.old_pos.x<<" "<<a.old_pos.y<<"   " << a.new_pos.x<<" "<<a.new_pos.y<<"   "<<a.arrow.x<<" "<<a.arrow.y<<endl; 
+}
+
+int main(){
+	int player;
+	int qcount1=0;
+	int qcount2=0;
+	FOR(i,10){
+		FOR(j,10){
+			scanf("%d",&DP[i][j]);
+			if(DP[i][j]==1){
+				queen[0][qcount1].x=i;
+				queen[0][qcount1].y=j;
+				qcount1++;
+			}
+			if(DP[i][j]==2){
+				queen[1][qcount2].x=i;
+				queen[1][qcount2].y=j;
+				qcount2++;
+			}
+		}
+	}
+	// FOR(j,4){
+	// 	cout<<queen[0][j].x<<" "<<queen[0][j].y<<endl; 
+	// 	cout<<queen[1][j].x<<" "<<queen[1][j].y<<endl; 
+	// }
+	cout<<"Now"<<endl;
+	scanf("%d",&player);
+	cout<<"Player"<<player<<endl;
+	// cout<<territory()<<endl;
+	vector<move> a = list_move(1);
+	FOR(i,a.size()){
+		print_move(a[i]);
+	}
+
+	return 0;
+}
+
+
+
+
+
