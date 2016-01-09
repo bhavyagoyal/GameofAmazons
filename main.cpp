@@ -1,6 +1,8 @@
-#include <bits/stdc++.h>
+#include <vector>
+#include <stdio.h>
+#include <list>
+#include <iostream>
 using namespace std;
-
 
 #define FOR(i,n) for(int i=0;i<n;i++)
 #define MOD 1000000009 
@@ -18,15 +20,15 @@ struct pos {
 };
 
 
-struct move{
+struct step{
 	pos old_pos,new_pos,arrow;
-	move(){};
-	move(pos a, pos b, pos c) : old_pos(a) , new_pos(b) , arrow(c) {}
+	step(){};
+	step(pos a, pos b, pos c) : old_pos(a) , new_pos(b) , arrow(c) {}
 };
 
 int DP[10][10];
 pos queen[2][4];
-move global_move;
+step global_step;
 
 int bfs(pos f, int startplay){
 	int visited[10][10];
@@ -45,20 +47,20 @@ int bfs(pos f, int startplay){
 		FOR(j,10){
 			if(DP[a.first.x][j]==0 && (visited[a.first.x][j]==0)){
 				q.push_back(make_pair(pos(a.first.x,j) , a.second+1));
-				visited[a.first.x][j]==1;
+				visited[a.first.x][j]=1;
 			}
 			if(DP[j][a.first.y]==0 && (visited[j][a.first.y]==0)){
 				q.push_back(make_pair(pos(j,a.first.y) , a.second+1));
-				visited[j][a.first.y]==1;
+				visited[j][a.first.y]=1;
 			}
 
 			if((a.first.x+j)<10 && (a.first.y+j)<10 && DP[a.first.x+j][a.first.y+j]==0 && (visited[a.first.x+j][a.first.y+j]==0)){
 				q.push_back(make_pair(pos(a.first.x+j,a.first.y+j) , a.second+1));
-				visited[a.first.x+j][a.first.y+j]==1;
+				visited[a.first.x+j][a.first.y+j]=1;
 			}
 			if((a.first.x-j)>=0 && (a.first.y-j)>=0 && DP[a.first.x-j][a.first.y-j]==0 && (visited[a.first.x-j][a.first.y-j]==0)){
 				q.push_back(make_pair(pos(a.first.x-j,a.first.y-j) , a.second+1));
-				visited[a.first.x-j][a.first.y-j]==1;
+				visited[a.first.x-j][a.first.y-j]=1;
 			}
 		}
 	}
@@ -220,12 +222,12 @@ std::vector<pos> max_limit(pos q){
 }
 
 
-std::vector<move> list_move(int player){
-	std::vector<move> valid;
+std::vector<step> list_step(int player){
+	std::vector<step> valid;
 	FOR(i,4){
-		move mymove = move(queen[player-1][i],queen[player-1][i],queen[player-1][i]);
-		int m = mymove.old_pos.x;
-		int n = mymove.old_pos.y;
+		step mystep = step(queen[player-1][i],queen[player-1][i],queen[player-1][i]);
+		int m = mystep.old_pos.x;
+		int n = mystep.old_pos.y;
 		std::vector<int> a;
 		a.push_back(m);
 		if(m<9){
@@ -244,14 +246,14 @@ std::vector<move> list_move(int player){
 		}
 		FOR(k,a.size()){
 			FOR(l,b.size()){
-				mymove.new_pos.x = a[k];
-				mymove.new_pos.y = b[l];
-				if(((a[k]!=mymove.old_pos.x)||(b[l]!=mymove.old_pos.y))&&(DP[a[k]][b[l]]==0))
+				mystep.new_pos.x = a[k];
+				mystep.new_pos.y = b[l];
+				if(((a[k]!=mystep.old_pos.x)||(b[l]!=mystep.old_pos.y))&&(DP[a[k]][b[l]]==0))
 				{
-					vector<pos> arrows = max_limit(mymove.new_pos);
+					vector<pos> arrows = max_limit(mystep.new_pos);
 					FOR(j,arrows.size()){
-						mymove.arrow = arrows[j];
-						valid.push_back(mymove);
+						mystep.arrow = arrows[j];
+						valid.push_back(mystep);
 					}
 				}
 			}
@@ -260,14 +262,14 @@ std::vector<move> list_move(int player){
 	return valid;
 }
 
-void implement_move(struct move m,int player)
+void implement_step(struct step m,int player)
 {
 	DP[m.old_pos.x][m.old_pos.y]=0;
 	DP[m.new_pos.x][m.new_pos.y]=player;
 	DP[m.arrow.x][m.arrow.y]=-1;
 }
 
-void unimplement_move(struct move m,int player)
+void unimplement_step(struct step m,int player)
 {
 	DP[m.old_pos.x][m.old_pos.y]=player;
 	DP[m.new_pos.x][m.new_pos.y]=0;
@@ -291,33 +293,33 @@ double maxval(double alpha, double beta,int depth,int player)
 	}
 	else
 	{
-		vector<move> valid_moves=list_move(player);
+		vector<step> valid_steps=list_step(player);
 		double curbest =-1;
-		int s=valid_moves.size();
+		int s=valid_steps.size();
 		int curbestind;
 		for(int i=0;i<s;i++)
 		{
 			cout << "I :"<< i << endl;
-			implement_move(valid_moves[i],player);
+			implement_step(valid_steps[i],player);
 			double val=minval(alpha,beta,depth-1,(player+1)%2+2*(player%2));
 			if(val>curbest)
 				curbestind=i;
 			curbest=max(val,curbest);
-			unimplement_move(valid_moves[i],player);
+			unimplement_step(valid_steps[i],player);
 			alpha=max(alpha,val);
 			if(alpha>beta)
 			{
-				global_move.old_pos=valid_moves[i].old_pos;
-				global_move.new_pos=valid_moves[i].new_pos;
-				global_move.arrow=valid_moves[i].arrow;
+				global_step.old_pos=valid_steps[i].old_pos;
+				global_step.new_pos=valid_steps[i].new_pos;
+				global_step.arrow=valid_steps[i].arrow;
 				return val;
 			}
 		}
 		if(depth==DEPTH)
 		{
-			global_move.old_pos=valid_moves[curbestind].old_pos;
-			global_move.new_pos=valid_moves[curbestind].new_pos;
-			global_move.arrow=valid_moves[curbestind].arrow;
+			global_step.old_pos=valid_steps[curbestind].old_pos;
+			global_step.new_pos=valid_steps[curbestind].new_pos;
+			global_step.arrow=valid_steps[curbestind].arrow;
 		}
 		return curbest;
 	}
@@ -330,13 +332,13 @@ double minval(double alpha, double beta, int depth,int player)
 		return utility();
 	else
 	{
-		vector<move> valid_moves=list_move(player);
+		vector<step> valid_steps=list_step(player);
 		double curbest=10000000;
-		int s=valid_moves.size();
+		int s=valid_steps.size();
 		int curbestind;
 		for(int i=0;i<s;i++)
 		{
-			implement_move(valid_moves[i],player);
+			implement_step(valid_steps[i],player);
 			double val=maxval(alpha,beta,depth-1,(player+1)%2+2*(player%2));
 			if(curbest>val)
 			{
@@ -345,21 +347,21 @@ double minval(double alpha, double beta, int depth,int player)
 
 			}
 			beta=min(beta,val);
-			unimplement_move(valid_moves[i],player);
+			unimplement_step(valid_steps[i],player);
 			if(alpha>beta)
 			{
-				global_move.old_pos=valid_moves[i].old_pos;
-				global_move.new_pos=valid_moves[i].new_pos;
-				global_move.arrow=valid_moves[i].arrow;
+				global_step.old_pos=valid_steps[i].old_pos;
+				global_step.new_pos=valid_steps[i].new_pos;
+				global_step.arrow=valid_steps[i].arrow;
 				return val;
 			}
 		}
 
 		if(depth==DEPTH)
 		{
-			global_move.old_pos=valid_moves[curbestind].old_pos;
-			global_move.new_pos=valid_moves[curbestind].new_pos;
-			global_move.arrow=valid_moves[curbestind].arrow;
+			global_step.old_pos=valid_steps[curbestind].old_pos;
+			global_step.new_pos=valid_steps[curbestind].new_pos;
+			global_step.arrow=valid_steps[curbestind].arrow;
 		}
 		return curbest;
 
@@ -367,7 +369,7 @@ double minval(double alpha, double beta, int depth,int player)
 }
 
 
-void print_move(move a){
+void print_step(step a){
 	cout<<a.old_pos.x<<" "<<a.old_pos.y<<"   " << a.new_pos.x<<" "<<a.new_pos.y<<"   "<<a.arrow.x<<" "<<a.arrow.y<<endl; 
 }
 void print_pos(pos a){
@@ -401,18 +403,18 @@ int main(){
 	scanf("%d",&player);
 	cout<<"Player"<<player<<endl;
 	// cout<<territory()<<endl;
-/*	vector<move> a = list_move(1);
+/*	vector<step> a = list_step(1);
 	FOR(i,a.size()){
-		print_move(a[i]);
+		print_step(a[i]);
 	}
 */
 	if(player==1)
 		maxval(INT_MIN,INT_MAX,DEPTH,1);
 	else
 		minval(INT_MIN,INT_MAX,DEPTH,2);
-	printf("%d %d\n",global_move.old_pos.x,global_move.old_pos.y);
-	printf("%d %d\n",global_move.new_pos.x,global_move.new_pos.y);
-	printf("%d %d\n",global_move.arrow.x,global_move.arrow.y);
+	printf("%d %d\n",global_step.old_pos.x,global_step.old_pos.y);
+	printf("%d %d\n",global_step.new_pos.x,global_step.new_pos.y);
+	printf("%d %d\n",global_step.arrow.x,global_step.arrow.y);
 	return 0;
 }
 
