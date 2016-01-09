@@ -2,6 +2,8 @@
 #include <stdio.h>
 #include <list>
 #include <iostream>
+#include <limits.h>
+#include <string.h>
 using namespace std;
 
 #define FOR(i,n) for(int i=0;i<n;i++)
@@ -145,78 +147,86 @@ std::vector<pos> max_limit(pos q){
 	pos p =  pos(q.x,q.y);
 	if(q.x<9){
 		while(p.x<9){
-			if(DP[p.x][p.y]!=0)
+			if(DP[p.x+1][p.y]!=0)
 				break;
 			p.x++;
 		}
-		limits.push_back(p);
+		if(!(p==q)){
+		limits.push_back(p);}
 		if(q.y<9){
 			p =  pos(q.x,q.y);
 			while(p.x<9&&p.y<9){
-				if(DP[p.x][p.y]!=0)
+				if(DP[p.x+1][p.y+1]!=0)
 					break;
 				p.x++;
 				p.y++;
 			}
 		}
-		limits.push_back(p);
+		if(!(p==q)){
+		limits.push_back(p);}
 		if(q.y>0){
 			p =  pos(q.x,q.y);
 			while(p.x<9&&p.y>0){
-				if(DP[p.x][p.y]!=0)
+				if(DP[p.x+1][p.y-1]!=0)
 					break;
 				p.x++;
 				p.y--;
 			}
 		}
-		limits.push_back(p);
+		if(!(p==q)){
+		limits.push_back(p);}
 	}
 	if(q.x>0){
 		p =  pos(q.x,q.y);
 		while(p.x>0){
-			if(DP[p.x][p.y]!=0)
+			if(DP[p.x-1][p.y]!=0)
 				break;
 			p.x--;
 		}
-		limits.push_back(p);
+		if(!(p==q)){
+		limits.push_back(p);}
 		if(q.y<9){
 			p =  pos(q.x,q.y);
 			while(p.x>0&&p.y<9){
-				if(DP[p.x][p.y]!=0)
+				if(DP[p.x-1][p.y+1]!=0)
 					break;
 				p.x--;
 				p.y++;
 			}
 		}
-		limits.push_back(p);
+		if(!(p==q)){
+		limits.push_back(p);}
 		if(q.y>0){
 			p =  pos(q.x,q.y);
 			while(p.x>0&&p.y>0){
-				if(DP[p.x][p.y]!=0)
+				if(DP[p.x-1][p.y-1]!=0)
 					break;
 				p.x--;
 				p.y--;
 			}
 		}
-		limits.push_back(p);
+		if(!(p==q)){
+		limits.push_back(p);}
 	}
 	if(q.y<9){
 		p =  pos(q.x,q.y);
 		while(p.y<9){
-			if(DP[p.x][p.y]!=0)
+			if(DP[p.x][p.y+1]!=0)
 				break;
 			p.y++;
 		}
-		limits.push_back(p);
+		if(!(p==q)){
+		limits.push_back(p);}
 	}
 	if(q.y>0){
 		p =  pos(q.x,q.y);
 		while(p.y>0){
-			if(DP[p.x][p.y]!=0)
+			if(DP[p.x][p.y-1]!=0)
 				break;
 			p.y--;
 		}
-		limits.push_back(p);
+		if(!(p==q)){
+		limits.push_back(p);}
 	}
 	return limits;
 }
@@ -299,7 +309,7 @@ double maxval(double alpha, double beta,int depth,int player)
 		int curbestind;
 		for(int i=0;i<s;i++)
 		{
-			cout << "I :"<< i << endl;
+			//cout << "I :"<< i << endl;
 			implement_step(valid_steps[i],player);
 			double val=minval(alpha,beta,depth-1,(player+1)%2+2*(player%2));
 			if(val>curbest)
@@ -399,9 +409,9 @@ int main(){
 	// 	cout<<queen[0][j].x<<" "<<queen[0][j].y<<endl; 
 	// 	cout<<queen[1][j].x<<" "<<queen[1][j].y<<endl; 
 	// }
-	cout<<"Now"<<endl;
+	//cout<<"Now"<<endl;
 	scanf("%d",&player);
-	cout<<"Player"<<player<<endl;
+	//cout<<"Player"<<player<<endl;
 	// cout<<territory()<<endl;
 /*	vector<step> a = list_step(1);
 	FOR(i,a.size()){
