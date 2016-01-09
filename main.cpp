@@ -170,7 +170,7 @@ int main(){
 
 std::vector<pos> max_limit(pos q){
 	std::vector<pos> limits;
-	pos p = {q.x,q.y};
+	pos p =  pos(q.x,q.y);
 	if(q.x<9){
 		while(p.x<9){
 			if(DP[p.x][p.y]!=0)
@@ -179,7 +179,7 @@ std::vector<pos> max_limit(pos q){
 		}
 		limits.push_back(p);
 		if(q.y<9){
-			p = {q.x,q.y};
+			p =  pos(q.x,q.y);
 			while(p.x<9&&p.y<9){
 				if(DP[p.x][p.y]!=0)
 					break;
@@ -189,7 +189,7 @@ std::vector<pos> max_limit(pos q){
 		}
 		limits.push_back(p);
 		if(q.y>0){
-			p = {q.x,q.y};
+			p =  pos(q.x,q.y);
 			while(p.x<9&&p.y>0){
 				if(DP[p.x][p.y]!=0)
 					break;
@@ -200,6 +200,7 @@ std::vector<pos> max_limit(pos q){
 		limits.push_back(p);
 	}
 	if(q.x>0){
+		p =  pos(q.x,q.y);
 		while(p.x>0){
 			if(DP[p.x][p.y]!=0)
 				break;
@@ -207,7 +208,7 @@ std::vector<pos> max_limit(pos q){
 		}
 		limits.push_back(p);
 		if(q.y<9){
-			p = {q.x,q.y};
+			p =  pos(q.x,q.y);
 			while(p.x>0&&p.y<9){
 				if(DP[p.x][p.y]!=0)
 					break;
@@ -217,7 +218,7 @@ std::vector<pos> max_limit(pos q){
 		}
 		limits.push_back(p);
 		if(q.y>0){
-			p = {q.x,q.y};
+			p =  pos(q.x,q.y);
 			while(p.x>0&&p.y>0){
 				if(DP[p.x][p.y]!=0)
 					break;
@@ -228,7 +229,7 @@ std::vector<pos> max_limit(pos q){
 		limits.push_back(p);
 	}
 	if(q.y<9){
-		p = {q.x,q.y};
+		p =  pos(q.x,q.y);
 		while(p.y<9){
 			if(DP[p.x][p.y]!=0)
 				break;
@@ -237,7 +238,7 @@ std::vector<pos> max_limit(pos q){
 		limits.push_back(p);
 	}
 	if(q.y>0){
-		p = {q.x,q.y};
+		p =  pos(q.x,q.y);
 		while(p.y>0){
 			if(DP[p.x][p.y]!=0)
 				break;
@@ -277,9 +278,9 @@ std::vector<move> list_move(int player){
 				mymove.new_pos.x = b[l];
 				if(((a[k]!=mymove.old_pos.x)||(b[l]!=mymove.old_pos.y))&&(DP[a[k]][b[l]]==0))
 				{
-					pos arrows = max_limit(mymove.new_pos);
+					vector<pos> arrows = max_limit(mymove.new_pos);
 					FOR(j,arrows.size()){
-						mymove.arrow = arrow[j];
+						mymove.arrow = arrows[j];
 						valid.push_back(mymove);
 					}
 				}
