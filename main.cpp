@@ -6,35 +6,83 @@ using namespace std;
 #define MOD 1000000009 
 #define MAX(a,b) ( (a) > (b) ? (a) : (b))
 #define MIN(a,b) ( (a) < (b) ? (a) : (b))
-
-
+#define DEPTH 3
 
 struct pos {
     int x;int y;
     pos(){};
     pos( int i, int r ) : x(i), y(r) {}
-    bool operator=( const myclass & d ) const {
+    bool operator==( const pos & d ) const {
        return ((x==d.x)&&(y==d.y));
     }
 };
 
+
+struct move{
+	pos old_pos,new_pos,arrow;
+};
 int DP[10][10];
 pos queen[2][4];
+move global_move;
 
+int bfs(pos f, int startplay){
+	int visited[10][10];
+	memset(visited,0,100*sizeof(int));
+	list< pair<pos, int> > q;
+	FOR(i,4){
+		q.push_back(make_pair(queen[startplay][i] , 0));
+		visited[queen[startplay][i].x][queen[startplay][i].y]=1;
+	}
+	while(!q.empty()){
+		pair< pos,int > a = q.front();
+		q.pop_front();
+		if(a.first==f){
+			return a.second;
+		}
+		FOR(j,10){
+			if(DP[a.first.x][j]==0 && (visited[a.first.x][j]==0)){
+				q.push_back(make_pair(pos(a.first.x,j) , a.second+1));
+				visited[a.first.x][j]==1;
+			}
+			if(DP[j][a.first.y]==0 && (visited[j][a.first.y]==0)){
+				q.push_back(make_pair(pos(j,a.first.y) , a.second+1));
+				visited[j][a.first.y]==1;
+			}
 
-// int bfs()
+			if((a.first.x+j)<10 && (a.first.y+j)<10 && DP[a.first.x+j][a.first.y+j]==0 && (visited[a.first.x+j][a.first.y+j]==0)){
+				q.push_back(make_pair(pos(a.first.x+j,a.first.y+j) , a.second+1));
+				visited[a.first.x+j][a.first.y+j]==1;
+			}
+			if((a.first.x-j)>=0 && (a.first.y-j)>=0 && DP[a.first.x-j][a.first.y-j]==0 && (visited[a.first.x-j][a.first.y-j]==0)){
+				q.push_back(make_pair(pos(a.first.x-j,a.first.y-j) , a.second+1));
+				visited[a.first.x-j][a.first.y-j]==1;
+			}
+		}
+	}
+	return INT_MAX;
+}
 
-// int territory(){
-
-// 	FOR(i,10){
-// 		FOR(j,10){
-// 			if(DP[i][j] !=0){
-// 				continue;
-// 			}
-
-// 		}
-// 	}
-// }
+int territory(){
+	// cout<<"territory"<<endl;
+	int count=0;
+	FOR(i,10){
+		FOR(j,10){
+			// cerr<<i<<j<<"   ";
+			if(DP[i][j] !=0){
+				continue;
+			}
+			int a1= bfs(pos(i,j), 0);
+			int a2= bfs(pos(i,j), 1);
+			if(a1>a2){
+				count++;
+			}
+			else if(a1<a2){
+				count--;
+			}
+		}
+	}
+	return count;
+}
 
 
 int mobility(){
@@ -77,11 +125,11 @@ int mobility(){
 	}
 }
 
-int evaluator(){
-	int ans = 0;
-	ans = ans+mobility();
+// int evaluator(){
+// 	int ans = 0;
+// 	ans = ans+mobility();
 
-}
+// }
 
 int main(){
 	int player;
@@ -102,14 +150,19 @@ int main(){
 			}
 		}
 	}
+	// FOR(j,4){
+	// 	cout<<queen[0][j].x<<" "<<queen[0][j].y<<endl; 
+	// 	cout<<queen[1][j].x<<" "<<queen[1][j].y<<endl; 
+	// }
+	cout<<"Now"<<endl;
 	scanf("%d",&player);
+	cout<<"Player"<<player<<endl;
+	cout<<territory()<<endl;
 
 	return 0;
 }
 
-struct move{
-	pos old_pos, new_pos, arrow;
-};
+
 
 std::vector<pos> max_limit(pos q){
 	std::vector<pos> limits;
@@ -196,83 +249,143 @@ std::vector<move> list_move(int player){
 	std::vector<move> valid;
 	FOR(i,4){
 		move mymove = {queen[player][i],queen[player][i],queen[player][i]};
-		//R
-		if(mymove.old_pos.x<9 && (DP[mymove.old_pos.x+1][mymove.old_pos.y]==0)){
-			mymove.new_pos.x = mymove.old_pos.x + 1;
-			pos arrows = max_limit(mymove.new_pos);
-			FOR(j,arrows.size()){
-				mymove.arrow = arrow[j];
-				valid.push_back(mymove);
-			}
+		int m = mymove.old_pos.x;
+		int n = mymove.old_pos.y;
+		std::vector<int> a;
+		a.push_back(m);
+		if(m<9){
+			a.push_back(m+1);
 		}
-		//L
-		if(mymove.old_pos.x>0 && (DP[mymove.old_pos.x-1][mymove.old_pos.y]==0)){
-			mymove.new_pos.x = mymove.old_pos.x - 1;
-			pos arrows = max_limit(mymove.new_pos);
-			FOR(j,arrows.size()){
-				mymove.arrow = arrow[j];
-				valid.push_back(mymove);
-			}
+		if(m>0){
+			a.push_back(m-1);
 		}
-		//T
-		if(mymove.old_pos.y<9 && (DP[mymove.old_pos.x][mymove.old_pos.y+1]==0)){
-			mymove.new_pos.y = mymove.old_pos.y + 1;
-			pos arrows = max_limit(mymove.new_pos);
-			FOR(j,arrows.size()){
-				mymove.arrow = arrow[j];
-				valid.push_back(mymove);
-			}
+		std::vector<int> b;
+		b.push_back(n);
+		if(n<9){
+			b.push_back(n+1);
 		}
-		//B
-		if(mymove.old_pos.y>0 && (DP[mymove.old_pos.x][mymove.old_pos.y-1]==0)){
-			mymove.new_pos.y = mymove.old_pos.y - 1;
-			pos arrows = max_limit(mymove.new_pos);
-			FOR(j,arrows.size()){
-				mymove.arrow = arrow[j];
-				valid.push_back(mymove);
-			}
+		if(n>0){
+			b.push_back(n-1);
 		}
-		//TR
-		if(mymove.old_pos.x<9 && mymove.old_pos.y<9 && (DP[mymove.old_pos.x+1][mymove.old_pos.y+1]==0)){
-			mymove.new_pos.x = mymove.old_pos.x + 1;
-			mymove.new_pos.y = mymove.old_pos.y + 1;
-			pos arrows = max_limit(mymove.new_pos);
-			FOR(j,arrows.size()){
-				mymove.arrow = arrow[j];
-				valid.push_back(mymove);
-			}
-		}
-		//TL
-		if(mymove.old_pos.x>0 && mymove.old_pos.y<9 && (DP[mymove.old_pos.x-1][mymove.old_pos.y+1]==0)){
-			mymove.new_pos.x = mymove.old_pos.x - 1;
-			mymove.new_pos.y = mymove.old_pos.y + 1;
-			pos arrows = max_limit(mymove.new_pos);
-			FOR(j,arrows.size()){
-				mymove.arrow = arrow[j];
-				valid.push_back(mymove);
-			}
-		}
-		//BR
-		if(mymove.old_pos.x<9 && mymove.old_pos.y>0 && (DP[mymove.old_pos.x+1][mymove.old_pos.y-1]==0)){
-			mymove.new_pos.x = mymove.old_pos.x + 1;
-			mymove.new_pos.y = mymove.old_pos.y - 1;
-			pos arrows = max_limit(mymove.new_pos);
-			FOR(j,arrows.size()){
-				mymove.arrow = arrow[j];
-				valid.push_back(mymove);
-			}
-		}
-		//BL
-		if(mymove.old_pos.x>0 && mymove.old_pos.y>0 && (DP[mymove.old_pos.x-1][mymove.old_pos.y-1]==0)){
-			mymove.new_pos.x = mymove.old_pos.x - 1;
-			mymove.new_pos.y = mymove.old_pos.y - 1;
-			pos arrows = max_limit(mymove.new_pos);
-			FOR(j,arrows.size()){
-				mymove.arrow = arrow[j];
-				valid.push_back(mymove);
+		FOR(k,a.size()){
+			FOR(l,b.size()){
+				mymove.new_pos.x = a[k];
+				mymove.new_pos.x = b[l];
+				if(((a[k]!=mymove.old_pos.x)||(b[l]!=mymove.old_pos.y))&&(DP[a[k]][b[l]]==0))
+				{
+					pos arrows = max_limit(mymove.new_pos);
+					FOR(j,arrows.size()){
+						mymove.arrow = arrow[j];
+						valid.push_back(mymove);
+					}
+				}
 			}
 		}
 	}
 	return valid;
 }
 
+void implement_move(struct move m,int player)
+{
+	DP[m.old_pos.x][m.old_pos.y]=0;
+	DP[m.new_pos.x][m.new_pos.y]=player;
+	DP[m.arrow.x][m.arrow.y]=-1;
+}
+
+void unimplement_move(struct move m,int player)
+{
+	DP[m.old_pos.x][m.old_pos.y]=player;
+	DP[m.new_pos.x][m.new_pos.y]=0;
+	DP[m.arrow.x][m.arrow.y]=0;
+
+}
+
+
+double utility()
+{
+	return mobility()+territory();	
+}
+
+double minval(double,double,int,int);
+
+double maxval(double alpha, double beta,int depth,int player)
+{
+	if(depth==0)
+	{
+		return utility();
+	}
+	else
+	{
+		vector<move> valid_moves=list_move(player);
+		double curbest =-1;
+		int s=valid_moves.size();
+		int curbestind;
+		for(int i=0;i<s;i++)
+		{
+			implement_move(valid_moves[i],player);
+			double val=minval(alpha,beta,depth-1,(player+1)%2+2*(player%2));
+			if(val>curbest)
+				curbestind=i;
+			curbest=max(val,curbest);
+			unimplement_move(valid_moves[i],player);
+			alpha=max(alpha,val);
+			if(alpha>beta)
+			{
+				global_move.old_pos=valid_moves[i].old_pos;
+				global_move.new_pos=valid_moves[i].new_pos;
+				global_move.arrow=valid_moves[i].arrow;
+				return val;
+			}
+		}
+		if(depth==DEPTH)
+		{
+			global_move.old_pos=valid_moves[curbestind].old_pos;
+			global_move.new_pos=valid_moves[curbestind].new_pos;
+			global_move.arrow=valid_moves[curbestind].arrow;
+		}
+		return curbest;
+	}
+}
+
+
+double minval(double alpha, double beta, int depth,int player)
+{
+	if(depth==0)
+		return utility();
+	else
+	{
+		vector<move> valid_moves=list_move(player);
+		double curbest=10000000;
+		int s=valid_moves.size();
+		int curbestind;
+		for(int i=0;i<s;i++)
+		{
+			implement_move(valid_moves[i],player);
+			double val=maxval(alpha,beta,depth-1,(player+1)%2+2*(player%2));
+			if(curbest>val)
+			{
+				curbestind=i;
+				curbest=val;
+
+			}
+			beta=min(beta,val);
+			unimplement_move(valid_moves[i],player);
+			if(alpha>beta)
+			{
+				global_move.old_pos=valid_moves[i].old_pos;
+				global_move.new_pos=valid_moves[i].new_pos;
+				global_move.arrow=valid_moves[i].arrow;
+				return val;
+			}
+		}
+
+		if(depth==DEPTH)
+		{
+			global_move.old_pos=valid_moves[curbestind].old_pos;
+			global_move.new_pos=valid_moves[curbestind].new_pos;
+			global_move.arrow=valid_moves[curbestind].arrow;
+		}
+		return curbest;
+
+	}
+}
