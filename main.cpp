@@ -108,16 +108,171 @@ int main(){
 }
 
 struct move{
-	int old_x, old_y;
-	int new_x, new_y;
-	int arrowx, arrowy;
+	pos old_pos, new_pos, arrow;
 };
 
- std::vector<move> list_move(int DP[10][10], int player){
+std::vector<pos> max_limit(pos q){
+	std::vector<pos> limits;
+	pos p = {q.x,q.y};
+	if(q.x<9){
+		while(p.x<9){
+			if(DP[p.x][p.y]!=0)
+				break;
+			p.x++;
+		}
+		limits.push_back(p);
+		if(q.y<9){
+			p = {q.x,q.y};
+			while(p.x<9&&p.y<9){
+				if(DP[p.x][p.y]!=0)
+					break;
+				p.x++;
+				p.y++;
+			}
+		}
+		limits.push_back(p);
+		if(q.y>0){
+			p = {q.x,q.y};
+			while(p.x<9&&p.y>0){
+				if(DP[p.x][p.y]!=0)
+					break;
+				p.x++;
+				p.y--;
+			}
+		}
+		limits.push_back(p);
+	}
+	if(q.x>0){
+		while(p.x>0){
+			if(DP[p.x][p.y]!=0)
+				break;
+			p.x--;
+		}
+		limits.push_back(p);
+		if(q.y<9){
+			p = {q.x,q.y};
+			while(p.x>0&&p.y<9){
+				if(DP[p.x][p.y]!=0)
+					break;
+				p.x--;
+				p.y++;
+			}
+		}
+		limits.push_back(p);
+		if(q.y>0){
+			p = {q.x,q.y};
+			while(p.x>0&&p.y>0){
+				if(DP[p.x][p.y]!=0)
+					break;
+				p.x--;
+				p.y--;
+			}
+		}
+		limits.push_back(p);
+	}
+	if(q.y<9){
+		p = {q.x,q.y};
+		while(p.y<9){
+			if(DP[p.x][p.y]!=0)
+				break;
+			p.y++;
+		}
+		limits.push_back(p);
+	}
+	if(q.y>0){
+		p = {q.x,q.y};
+		while(p.y>0){
+			if(DP[p.x][p.y]!=0)
+				break;
+			p.y--;
+		}
+		limits.push_back(p);
+	}
+	return limits;
+}
+
+
+std::vector<move> list_move(int player){
 	std::vector<move> valid;
 	FOR(i,4){
-		move mymove = {queen};
-a.push_back(mypoint);
+		move mymove = {queen[player][i],queen[player][i],queen[player][i]};
+		//R
+		if(mymove.old_pos.x<9 && (DP[mymove.old_pos.x+1][mymove.old_pos.y]==0)){
+			mymove.new_pos.x = mymove.old_pos.x + 1;
+			pos arrows = max_limit(mymove.new_pos);
+			FOR(j,arrows.size()){
+				mymove.arrow = arrow[j];
+				valid.push_back(mymove);
+			}
+		}
+		//L
+		if(mymove.old_pos.x>0 && (DP[mymove.old_pos.x-1][mymove.old_pos.y]==0)){
+			mymove.new_pos.x = mymove.old_pos.x - 1;
+			pos arrows = max_limit(mymove.new_pos);
+			FOR(j,arrows.size()){
+				mymove.arrow = arrow[j];
+				valid.push_back(mymove);
+			}
+		}
+		//T
+		if(mymove.old_pos.y<9 && (DP[mymove.old_pos.x][mymove.old_pos.y+1]==0)){
+			mymove.new_pos.y = mymove.old_pos.y + 1;
+			pos arrows = max_limit(mymove.new_pos);
+			FOR(j,arrows.size()){
+				mymove.arrow = arrow[j];
+				valid.push_back(mymove);
+			}
+		}
+		//B
+		if(mymove.old_pos.y>0 && (DP[mymove.old_pos.x][mymove.old_pos.y-1]==0)){
+			mymove.new_pos.y = mymove.old_pos.y - 1;
+			pos arrows = max_limit(mymove.new_pos);
+			FOR(j,arrows.size()){
+				mymove.arrow = arrow[j];
+				valid.push_back(mymove);
+			}
+		}
+		//TR
+		if(mymove.old_pos.x<9 && mymove.old_pos.y<9 && (DP[mymove.old_pos.x+1][mymove.old_pos.y+1]==0)){
+			mymove.new_pos.x = mymove.old_pos.x + 1;
+			mymove.new_pos.y = mymove.old_pos.y + 1;
+			pos arrows = max_limit(mymove.new_pos);
+			FOR(j,arrows.size()){
+				mymove.arrow = arrow[j];
+				valid.push_back(mymove);
+			}
+		}
+		//TL
+		if(mymove.old_pos.x>0 && mymove.old_pos.y<9 && (DP[mymove.old_pos.x-1][mymove.old_pos.y+1]==0)){
+			mymove.new_pos.x = mymove.old_pos.x - 1;
+			mymove.new_pos.y = mymove.old_pos.y + 1;
+			pos arrows = max_limit(mymove.new_pos);
+			FOR(j,arrows.size()){
+				mymove.arrow = arrow[j];
+				valid.push_back(mymove);
+			}
+		}
+		//BR
+		if(mymove.old_pos.x<9 && mymove.old_pos.y>0 && (DP[mymove.old_pos.x+1][mymove.old_pos.y-1]==0)){
+			mymove.new_pos.x = mymove.old_pos.x + 1;
+			mymove.new_pos.y = mymove.old_pos.y - 1;
+			pos arrows = max_limit(mymove.new_pos);
+			FOR(j,arrows.size()){
+				mymove.arrow = arrow[j];
+				valid.push_back(mymove);
+			}
+		}
+		//BL
+		if(mymove.old_pos.x>0 && mymove.old_pos.y>0 && (DP[mymove.old_pos.x-1][mymove.old_pos.y-1]==0)){
+			mymove.new_pos.x = mymove.old_pos.x - 1;
+			mymove.new_pos.y = mymove.old_pos.y - 1;
+			pos arrows = max_limit(mymove.new_pos);
+			FOR(j,arrows.size()){
+				mymove.arrow = arrow[j];
+				valid.push_back(mymove);
+			}
+		}
 	}
 	return valid;
 }
+
