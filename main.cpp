@@ -6,7 +6,7 @@ using namespace std;
 #define MOD 1000000009 
 #define MAX(a,b) ( (a) > (b) ? (a) : (b))
 #define MIN(a,b) ( (a) < (b) ? (a) : (b))
-
+#define DEPTH 3
 
 
 struct pos {
@@ -18,9 +18,13 @@ struct pos {
     }
 };
 
+
+struct move{
+	pos old_pos,new_pos,arrow;
+};
 int DP[10][10];
 pos queen[2][4];
-
+move global_move;
 
 int bfs(pos f, int startplay){
 	int visited[10][10];
@@ -147,4 +151,84 @@ int main(){
 	scanf("%d",&player);
 
 	return 0;
+}
+
+void implement_move(struct move m,int player)
+{
+	DP[m.old_pos.x][m.old_pos.y]=0;
+	DP[m.new_pos.x][m.new_pos.y]=player;
+	DP[m.arrow.x][m.arrow.y]=-1;
+}
+
+double maxval(double alpha, double beta,int depth,int player)
+{
+	if(depth==0)
+	{
+		return utility();
+	}
+	else
+	{
+		vector<move> valid_moves=list_move(player);
+		double curbest =-1;
+		int s=valid_moves.size();
+		int curbestind;
+		for(int i=0;i<s;i++)
+		{
+			implement_move(valid_moves[i],player);
+			double val=minval(alpha,beat,depth-1,(player+1)%2+2*(player%2));
+			if(val>curbest)
+				curbestind=i;
+			curbest=max(val,curbest);
+			DP[valid_moves[i].new_pos.x][valid_moves[i].new_pos.y]=0;
+			DP[valid_moves[i].old_pos.x][valid_moves[i].old_pos.y]=player;
+			DP[valid_moves[i].arrow.x][valid_moves[i].arrow.y]=0;
+			if(alpha>beta)
+			{
+				global_move.old_pos=valid_move[i].old_pos;
+				global_move.new_pos=valid_move[i].new_pos;
+				global_move.arrow=valid_move[i].arrow;
+				return val;
+			}
+		}
+		if(depth==DEPTH)
+		{
+			global_move.old_pos=valid_move[curbestind].old_pos;
+			global_move.new_pos=valid_move[curbestind].new_pos;
+			global_move.arrow=valid_move[curbestind].arrow;
+		}
+		return curbest;
+	}
+}
+
+
+double minval(double alpha, double beta, int depth,int player)
+{
+	if(depth==0)
+		return utility();
+	else
+	{
+		vector<move> valid_moves=list_move(player);
+		double curbest=-1;
+		int s=valid_moves.size();
+		int curbestind;
+		for(int i=0;i<s;i++)
+		{
+			implement_move(valid_moves[i],player);
+			double val=maxval(alpha,beta,depth-1,(player+1)%2+2*(palyer%2));
+			if(curbest>val)
+			{
+				curbestint=i;
+				curbest=val;
+
+			}
+			beta=min(beta,val);
+			DP[valid_moves[i].new_pos.x][valid_moves[i].new_pos.y]=0;
+			DP[valid_moves[i].old_pos.x][valid_moves[i].old_pos.y]=player;
+			DP[valid_moves[i].arrow.x][valid_moves[i].arrow.y]=0;
+			if(alpha>beta)
+			{
+				return val;
+			}
+		}
+	}
 }
