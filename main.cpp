@@ -46,25 +46,128 @@ int bfs(pos f, int startplay){
 		if(a.first==f){
 			return a.second;
 		}
-		FOR(j,10){
-			if(DP[a.first.x][j]==0 && (visited[a.first.x][j]==0)){
-				q.push_back(make_pair(pos(a.first.x,j) , a.second+1));
-				visited[a.first.x][j]=1;
-			}
-			if(DP[j][a.first.y]==0 && (visited[j][a.first.y]==0)){
-				q.push_back(make_pair(pos(j,a.first.y) , a.second+1));
-				visited[j][a.first.y]=1;
-			}
 
-			if((a.first.x+j)<10 && (a.first.y+j)<10 && DP[a.first.x+j][a.first.y+j]==0 && (visited[a.first.x+j][a.first.y+j]==0)){
-				q.push_back(make_pair(pos(a.first.x+j,a.first.y+j) , a.second+1));
-				visited[a.first.x+j][a.first.y+j]=1;
+		int j=1;
+		while(j<10){
+			if(((a.first.y+j)<10) && DP[a.first.x][a.first.y+j]==0){
+				if(visited[a.first.x][a.first.y+j]==0){
+					q.push_back(make_pair(pos(a.first.x,a.first.y+j) , a.second+1));
+					visited[a.first.x][a.first.y+j]=1;
+				}
 			}
-			if((a.first.x-j)>=0 && (a.first.y-j)>=0 && DP[a.first.x-j][a.first.y-j]==0 && (visited[a.first.x-j][a.first.y-j]==0)){
-				q.push_back(make_pair(pos(a.first.x-j,a.first.y-j) , a.second+1));
-				visited[a.first.x-j][a.first.y-j]=1;
-			}
+			else{break;}
+			j++;
 		}
+
+		j=1;
+		while(j<10){
+			if(((a.first.y-j)>=0) && DP[a.first.x][a.first.y-j]==0){
+				if(visited[a.first.x][a.first.y-j]==0){
+					q.push_back(make_pair(pos(a.first.x,a.first.y-j) , a.second+1));
+					visited[a.first.x][a.first.y-j]=1;
+				}
+			}
+			else{break;}
+			j++;
+		}
+
+		j=1;
+		while(j<10){
+			if(((a.first.x+j)<10) && DP[a.first.x+j][a.first.y]==0){
+				if(visited[a.first.x+j][a.first.y]==0){
+					q.push_back(make_pair(pos(a.first.x+j,a.first.y) , a.second+1));
+					visited[a.first.x+j][a.first.y]=1;
+				}
+			}
+			else{break;}
+			j++;
+		}
+
+		j=1;
+		while(j<10){
+			if(((a.first.x-j)>=0) && DP[a.first.x-j][a.first.y]==0){
+				if(visited[a.first.x-j][a.first.y]==0){
+					q.push_back(make_pair(pos(a.first.x-j,a.first.y) , a.second+1));
+					visited[a.first.x-j][a.first.y]=1;
+				}
+			}
+			else{break;}
+			j++;
+		}
+
+
+		j=1;
+		while(j<10){
+			if(((a.first.y-j)>=0) && ((a.first.x-j)>=0) && DP[a.first.x-j][a.first.y-j]==0){
+				if(visited[a.first.x-j][a.first.y-j]==0){
+					q.push_back(make_pair(pos(a.first.x-j,a.first.y-j) , a.second+1));
+					visited[a.first.x-j][a.first.y-j]=1;
+				}
+			}
+			else{break;}
+			j++;
+		}
+
+		j=1;
+		while(j<10){
+			if(((a.first.y+j)<10) && ((a.first.x+j)<10) && DP[a.first.x+j][a.first.y+j]==0){
+				if(visited[a.first.x+j][a.first.y+j]==0){
+					q.push_back(make_pair(pos(a.first.x+j,a.first.y+j) , a.second+1));
+					visited[a.first.x+j][a.first.y+j]=1;
+				}
+			}
+			else{break;}
+			j++;
+		}
+
+		j=1;
+		while(j<10){
+			if(((a.first.y+j)<10) && ((a.first.x-j)>=0) && DP[a.first.x-j][a.first.y+j]==0){
+				if(visited[a.first.x-j][a.first.y+j]==0){
+					q.push_back(make_pair(pos(a.first.x-j,a.first.y+j) , a.second+1));
+					visited[a.first.x-j][a.first.y+j]=1;
+				}
+			}
+			else{break;}
+			j++;
+		}
+
+		j=1;
+		while(j<10){
+			if(((a.first.y-j)>=0) && ((a.first.x+j)<10) && DP[a.first.x+j][a.first.y-j]==0){
+				if(visited[a.first.x+j][a.first.y-j]==0){
+					q.push_back(make_pair(pos(a.first.x+j,a.first.y-j) , a.second+1));
+					visited[a.first.x+j][a.first.y-j]=1;
+				}
+			}
+			else{break;}
+			j++;
+		}
+		// FOR(j,9){
+		// 	if(DP[j][a.first.y]==0 && (visited[j][a.first.y]==0)){
+		// 		q.push_back(make_pair(pos(j,a.first.y) , a.second+1));
+		// 		visited[j][a.first.y]=1;
+		// 	}
+
+		// 	if((a.first.x+j)<10 && (a.first.y+j)<10 && DP[a.first.x+j][a.first.y+j]==0 && (visited[a.first.x+j][a.first.y+j]==0)){
+		// 		q.push_back(make_pair(pos(a.first.x+j,a.first.y+j) , a.second+1));
+		// 		visited[a.first.x+j][a.first.y+j]=1;
+		// 	}
+
+		// 	if((a.first.x+j)<10 && (a.first.y-j)>=0 && DP[a.first.x+j][a.first.y-j]==0 && (visited[a.first.x+j][a.first.y-j]==0)){
+		// 		q.push_back(make_pair(pos(a.first.x+j,a.first.y-j) , a.second+1));
+		// 		visited[a.first.x+j][a.first.y-j]=1;
+		// 	}
+
+		// 	if((a.first.x-j)>=0 && (a.first.y-j)>=0 && DP[a.first.x-j][a.first.y-j]==0 && (visited[a.first.x-j][a.first.y-j]==0)){
+		// 		q.push_back(make_pair(pos(a.first.x-j,a.first.y-j) , a.second+1));
+		// 		visited[a.first.x-j][a.first.y-j]=1;
+		// 	}
+
+		// 	if((a.first.x-j)>=0 && (a.first.y+j)<10 && DP[a.first.x-j][a.first.y+j]==0 && (visited[a.first.x-j][a.first.y+j]==0)){
+		// 		q.push_back(make_pair(pos(a.first.x-j,a.first.y+j) , a.second+1));
+		// 		visited[a.first.x-j][a.first.y+j]=1;
+		// 	}
 	}
 	return -1;
 }
@@ -76,20 +179,28 @@ int territory(){
 		FOR(j,10){
 			// cerr<<i<<j<<"   ";
 			if(DP[i][j] !=0){
+				// cout<<" " <<0<<" ";
 				continue;
 			}
 			int a1= bfs(pos(i,j), 0);
 			int a2= bfs(pos(i,j), 1);
 			if(a1==-1 && a2==-1){
+				// cout<<" " <<0<<" ";
 				continue;
 			}
 			if(a1>a2){
-				count++;
+				count--;
+				// cout<<""<<-1<<" ";
 			}
 			else if(a1<a2){
-				count--;
+				count++;
+				// cout<<" "<<1<<" ";
+			}
+			else{
+				// cout<<" "<<0<<" ";
 			}
 		}
+		cout<<endl;
 	}
 	return count;
 }
@@ -409,9 +520,9 @@ int main(){
 	// 	cout<<queen[0][j].x<<" "<<queen[0][j].y<<endl; 
 	// 	cout<<queen[1][j].x<<" "<<queen[1][j].y<<endl; 
 	// }
-	//cout<<"Now"<<endl;
+	// cout<<"Now"<<endl;
 	scanf("%d",&player);
-	//cout<<"Player"<<player<<endl;
+	// cout<<"Player"<<player<<endl;
 	// cout<<territory()<<endl;
 /*	vector<step> a = list_step(1);
 	FOR(i,a.size()){
