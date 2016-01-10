@@ -31,11 +31,13 @@ struct step{
 int DP[10][10];
 pos queen[2][4];
 step global_step;
+int arrows_cnt=0;
+
 
 int bfs(pos f, int startplay){
 	int visited[10][10];
 	memset(visited,0,100*sizeof(int));
-	list< pair<pos, int> > q;
+  list< pair<pos, int> > q;
 	FOR(i,4){
 		q.push_back(make_pair(queen[startplay][i] , 0));
 		visited[queen[startplay][i].x][queen[startplay][i].y]=1;
@@ -205,9 +207,9 @@ int territory(){
 }
 
 
-int mobility(){
-	int count=0;
-	int sign=1;
+double mobility(){
+	double count=0;
+	double sign=1;
 	FOR(i,10){
 		FOR(j,10){
 			if(DP[i][j] == 1 ||  DP[i][j]==2){
@@ -215,7 +217,7 @@ int mobility(){
 					sign = -1;
 				}
 				else{
-					sign=1;
+					sign=1.5;
 				}
 				std::vector<int> a;
 				a.push_back(0);
@@ -353,34 +355,32 @@ std::vector<pos> max_limit(pos q){
 
 std::vector<step> list_step(int player){
 	std::vector<step> valid;
-	FOR(i,4){
+	int stepsize=1;
+/*	if(arrows_cnt<=30)
+		stepsize=3;
+	else
+		stepsize=1;*/
+	int queenid=-1;
+	int i = 3;
+/*	if(arrows_cnt<=20){
+		queenid = (arrows_cnt/2)%4;
+		i = queenid;
+		}
+*/
+
+		while(i>=queenid&&i!=-1){
 		step mystep = step(queen[player-1][i],queen[player-1][i],queen[player-1][i]);
 		int m = mystep.old_pos.x;
 		int n = mystep.old_pos.y;
-		// cerr<<m<<" "<<n<<"ADS"<<endl;
-		std::vector<int> a;
-		a.push_back(m);
-		if(m<9){
-			a.push_back(m+1);
-		}
-		if(m>0){
-			a.push_back(m-1);
-		}
-		std::vector<int> b;
-		b.push_back(n);
-		if(n<9){
-			b.push_back(n+1);
-		}
-		if(n>0){
-			b.push_back(n-1);
-		}
-		FOR(k,a.size()){
-			FOR(l,b.size()){
-				mystep.new_pos.x = a[k];
-				mystep.new_pos.y = b[l];
-				// cerr<<"NEW"<<endl;
-				// print_pos(mystep.new_pos);
-				if(((a[k]!=mystep.old_pos.x)||(b[l]!=mystep.old_pos.y))&&(DP[a[k]][b[l]]==0))
+		//cerr<<m<<" "<<n<<"ADS"<<endl;
+		int a[3]={1,0,-1};
+		
+		FOR(k,3){
+			FOR(l,3){
+			for(int p=1;p<=stepsize;p++){
+				mystep.new_pos.x = p*a[k]+m;
+				mystep.new_pos.y = p*a[l]+n;
+				if(mystep.new_pos.x<=9 && mystep.new_pos.x>=0 && mystep.new_pos.y<=9 && mystep.new_pos.y>=0 && DP[mystep.new_pos.x][mystep.new_pos.y]==0)
 				{	
 					DP[mystep.new_pos.x][mystep.new_pos.y] = player;
 					DP[mystep.old_pos.x][mystep.old_pos.y] = 0;
@@ -393,9 +393,14 @@ std::vector<step> list_step(int player){
 						valid.push_back(mystep);
 					}
 				}
+				else
+					break;
+				}
 			}
 		}
+		i--;
 	}
+	//cerr <<"RETURNING"<<endl;
 	return valid;
 }
 
@@ -417,7 +422,10 @@ void unimplement_step(struct step m,int player)
 
 double utility()
 {
-	return mobility()+territory();	
+	if(arrows_cnt<=25)
+		return 2*territory()+mobility();
+	else
+		return 2*mobility()+territory();
 }
 
 double minval(double,double,int,int);
@@ -532,7 +540,7 @@ int main(){
 			}
 		}
 	}
-	if(arrows_cnt>30)
+	if(arrows_cnt>50)
 		DEPTH=2;
 	// FOR(j,4){
 	// 	cout<<queen[0][j].x<<" "<<queen[0][j].y<<endl; 
