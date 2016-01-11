@@ -314,7 +314,7 @@ std::vector<pos> max_limit(pos q){
 	if(arrows_cnt<=30)
 		stepsize=5;
 	else
-		stepsize=7;
+		stepsize=5;
 	int a[3]={1,0,-1};
 	FOR(k,3){
 		FOR(l,3){
@@ -335,10 +335,13 @@ std::vector<pos> max_limit(pos q){
 std::vector<step> list_step(int player){
 	std::vector<step> valid;
 	int stepsize=3;
+	if(arrows_cnt<=10){
+		stepsize = 3;
+	}
 	if(arrows_cnt<=30)
-		stepsize=3;
+		stepsize=7;
 	else
-		stepsize=5;
+		stepsize=7;
 	int queenid=-1;
 	int i = 3;
 /*	if(arrows_cnt<=20){
@@ -512,7 +515,6 @@ int main(){
 	int player;
 	int qcount1=0;
 	int qcount2=0;
-	int arrows_cnt=0;
 	territory1 = (int***)malloc(sizeof(int**)*2);
 	FOR(i,2){
 		territory1[i] = (int**)malloc(sizeof(int*)*10);
@@ -539,7 +541,7 @@ int main(){
 		}
 	}
 	if(arrows_cnt>30)
-		DEPTH=3;
+		DEPTH=2;
 	// FOR(j,4){
 	// 	cout<<queen[0][j].x<<" "<<queen[0][j].y<<endl; 
 	// 	cout<<queen[1][j].x<<" "<<queen[1][j].y<<endl; 
