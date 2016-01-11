@@ -33,10 +33,7 @@ int DP[10][10];
 pos queen[2][4];
 step global_step;
 int arrows_cnt=0;
-// int **visited;
-// int **done;
 int ***territory1;
-// int **territory2;
 
 
 void bfs(int startplay){
@@ -48,7 +45,9 @@ void bfs(int startplay){
 		visited[queen[startplay][i].x][queen[startplay][i].y]=1;
 	}
 	FOR(i,10){
-		memset(territory1[startplay][i],INT_MAX,10*sizeof(int));
+		FOR(j,10){
+			territory1[startplay][i][j] = INT_MAX;
+		}
 	}
 	while(!q.empty()){
 		pair< pos,int > a = q.front();
@@ -180,12 +179,17 @@ void bfs(int startplay){
 		// 		visited[a.first.x-j][a.first.y+j]=1;
 		// 	}
 	}
-	// return -1;
+	// FOR(i,10){
+	// 	FOR(j,10){
+	// 		cout<<territory1[startplay][i][j]<<" ";
+	// 	}
+	// 	cout<<endl;
+	// }
 }
 
-int territory(){
+double territory(){
 	// cout<<"territory"<<endl;
-	int count = 0;
+	double count = 0.0;
 	// FOR(i,10){
 	// 	memset(done[i],0,10*sizeof(int));
 	// }
@@ -199,12 +203,22 @@ int territory(){
 			FOR(i,10){
 				FOR(j,10){
 					if(territory1[0][i][j]>territory1[1][i][j]){
-						count--;
+						count = count - 1.0;
+						// cout<<" " <<2<<"   ";
 					}
-					if(territory1[1][i][j]>territory1[0][i][j]){
-						count++;
+					else if(territory1[1][i][j]>territory1[0][i][j]){
+						count = count+1.0;
+						// cout<<" " <<1<<"   ";
+					}
+					else if(territory1[1][i][j] == territory1[0][i][j] && territory1[0][i][j]!=INT_MAX ){
+						count = count+0.2;
+						// cout<<" " <<0.2<<" ";
+					}
+					else{
+						// cout<<" " <<0<<"   ";
 					}
 				}
+				// cout<<endl;
 			}
 	return count;
 			// cerr<<i<<j<<"   ";
@@ -297,11 +311,10 @@ std::vector<pos> max_limit(pos q){
 	pos p =  pos(q.x,q.y);
 	//cerr<<p.x<<" "<<p.y<<"ADS"<<endl;
 	int stepsize = 5;	
-/*	if(arrows_cnt<=30)
-		stepsize=3;
+	if(arrows_cnt<=30)
+		stepsize=5;
 	else
-		stepsize=1;
-*/
+		stepsize=7;
 	int a[3]={1,0,-1};
 	FOR(k,3){
 		FOR(l,3){
@@ -322,10 +335,10 @@ std::vector<pos> max_limit(pos q){
 std::vector<step> list_step(int player){
 	std::vector<step> valid;
 	int stepsize=3;
-/*	if(arrows_cnt<=30)
+	if(arrows_cnt<=30)
 		stepsize=3;
 	else
-		stepsize=1;*/
+		stepsize=5;
 	int queenid=-1;
 	int i = 3;
 /*	if(arrows_cnt<=20){
@@ -400,9 +413,9 @@ void unimplement_step(struct step m,int player)
 double utility()
 {
 	if(arrows_cnt<=25)
-		return 2*territory()+mobility();
+		return 2.0*territory()+1.0*mobility();
 	else
-		return 2*mobility()+territory();
+		return 2.0*mobility()+1.0*territory();
 }
 
 double minval(double,double,int,int);
@@ -525,8 +538,8 @@ int main(){
 			}
 		}
 	}
-	if(arrows_cnt>50)
-		DEPTH=2;
+	if(arrows_cnt>30)
+		DEPTH=3;
 	// FOR(j,4){
 	// 	cout<<queen[0][j].x<<" "<<queen[0][j].y<<endl; 
 	// 	cout<<queen[1][j].x<<" "<<queen[1][j].y<<endl; 
