@@ -203,15 +203,25 @@ double territory(){
 			FOR(i,10){
 				FOR(j,10){
 					if(territory1[0][i][j]>territory1[1][i][j]){
-						count = count - 1.0;
+						if(territory1[0][i][j]==INT_MAX){
+							count = count - 4.0;
+						}
+						else{
+							count = count - (territory1[0][i][j])+(territory1[1][i][j]);
+						}
 						// cout<<" " <<2<<"   ";
 					}
 					else if(territory1[1][i][j]>territory1[0][i][j]){
-						count = count+1.0;
+						if(territory1[1][i][j]==INT_MAX){
+							count = count + 4.0;
+						}
+						else{
+							count = count - (territory1[0][i][j])+(territory1[1][i][j]);
+						}
 						// cout<<" " <<1<<"   ";
 					}
 					else if(territory1[1][i][j] == territory1[0][i][j] && territory1[0][i][j]!=INT_MAX ){
-						count = count+0.2;
+						count = count+0.5;
 						// cout<<" " <<0.2<<" ";
 					}
 					else{
