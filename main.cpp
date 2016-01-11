@@ -266,88 +266,25 @@ void print_pos(pos a){
 std::vector<pos> max_limit(pos q){
 	std::vector<pos> limits;
 	pos p =  pos(q.x,q.y);
-	if(q.x<9){
-		while(p.x<9){
-			if(DP[p.x+1][p.y]!=0)
+	//cerr<<p.x<<" "<<p.y<<"ADS"<<endl;
+	int stepsize = 5;	
+/*	if(arrows_cnt<=30)
+		stepsize=3;
+	else
+		stepsize=1;
+*/
+	int a[3]={1,0,-1};
+	FOR(k,3){
+		FOR(l,3){
+		for(int m=1;m<=stepsize;m++){
+			p.x = m*a[k]+q.x;
+			p.y = m*a[l]+q.y;
+			if(p.x<=9 && p.x>=0 && p.y<=9 && p.y>=0 && DP[p.x][p.y]==0)
+				limits.push_back(p);
+			else
 				break;
-			p.x++;
-		}
-		if(!(p==q)){
-		limits.push_back(p);}
-		if(q.y<9){
-			p =  pos(q.x,q.y);
-			while(p.x<9&&p.y<9){
-				if(DP[p.x+1][p.y+1]!=0)
-					break;
-				p.x++;
-				p.y++;
 			}
 		}
-		if(!(p==q)){
-		limits.push_back(p);}
-		if(q.y>0){
-			p =  pos(q.x,q.y);
-			while(p.x<9&&p.y>0){
-				if(DP[p.x+1][p.y-1]!=0)
-					break;
-				p.x++;
-				p.y--;
-			}
-		}
-		if(!(p==q)){
-		limits.push_back(p);}
-	}
-	if(q.x>0){
-		p =  pos(q.x,q.y);
-		while(p.x>0){
-			if(DP[p.x-1][p.y]!=0)
-				break;
-			p.x--;
-		}
-		if(!(p==q)){
-		limits.push_back(p);}
-		if(q.y<9){
-			p =  pos(q.x,q.y);
-			while(p.x>0&&p.y<9){
-				if(DP[p.x-1][p.y+1]!=0)
-					break;
-				p.x--;
-				p.y++;
-			}
-		}
-		if(!(p==q)){
-		limits.push_back(p);}
-		if(q.y>0){
-			p =  pos(q.x,q.y);
-			while(p.x>0&&p.y>0){
-				if(DP[p.x-1][p.y-1]!=0)
-					break;
-				p.x--;
-				p.y--;
-			}
-		}
-		if(!(p==q)){
-		limits.push_back(p);}
-	}
-	if(q.y<9){
-		p =  pos(q.x,q.y);
-		while(p.y<9){
-			if(DP[p.x][p.y+1]!=0)
-				break;
-			p.y++;
-		}
-		if(!(p==q)){
-		limits.push_back(p);}
-	}
-	if(q.y>0){
-		p =  pos(q.x,q.y);
-		while(p.y>0){
-			if(DP[p.x][p.y-1]!=0)
-				break;
-			p.y--;
-		}
-		if(!(p==q)){
-		limits.push_back(p);}
 	}
 	return limits;
 }
@@ -355,7 +292,7 @@ std::vector<pos> max_limit(pos q){
 
 std::vector<step> list_step(int player){
 	std::vector<step> valid;
-	int stepsize=1;
+	int stepsize=3;
 /*	if(arrows_cnt<=30)
 		stepsize=3;
 	else
@@ -564,8 +501,3 @@ int main(){
 	printf("%d %d\n",global_step.arrow.x,global_step.arrow.y);
 	return 0;
 }
-
-
-
-
-
