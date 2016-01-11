@@ -426,9 +426,11 @@ void unimplement_step(struct step m,int player)
 double utility()
 {
 	if(arrows_cnt<=25)
-		return 2.0*territory()+1.0*mobility();
+		return 1.0*territory()+1.0*mobility();
+	else if(arrows_cnt>26 && arrows_cnt<40)
+		return 1.0*mobility()+2.0*territory();
 	else
-		return 2.0*mobility()+1.0*territory();
+		return mobility()+3.0*territory();
 }
 
 double minval(double,double,int,int);
