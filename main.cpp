@@ -1,5 +1,6 @@
 #include <vector>
 #include <stdio.h>
+#include <cstdlib>
 #include <list>
 #include <iostream>
 #include <limits.h>
@@ -32,22 +33,30 @@ int DP[10][10];
 pos queen[2][4];
 step global_step;
 int arrows_cnt=0;
+// int **visited;
+// int **done;
+int ***territory1;
+// int **territory2;
 
 
-int bfs(pos f, int startplay){
+void bfs(int startplay){
 	int visited[10][10];
 	memset(visited,0,100*sizeof(int));
-  list< pair<pos, int> > q;
+	list< pair<pos, int> > q;
 	FOR(i,4){
 		q.push_back(make_pair(queen[startplay][i] , 0));
 		visited[queen[startplay][i].x][queen[startplay][i].y]=1;
 	}
+	FOR(i,10){
+		memset(territory1[startplay][i],INT_MAX,10*sizeof(int));
+	}
 	while(!q.empty()){
 		pair< pos,int > a = q.front();
 		q.pop_front();
-		if(a.first==f){
-			return a.second;
-		}
+		territory1[startplay][a.first.x][a.first.y] = a.second;
+		// if(a.first==f){
+		// 	return a.second;
+		// }
 
 		int j=1;
 		while(j<10){
@@ -171,39 +180,59 @@ int bfs(pos f, int startplay){
 		// 		visited[a.first.x-j][a.first.y+j]=1;
 		// 	}
 	}
-	return -1;
+	// return -1;
 }
 
 int territory(){
 	// cout<<"territory"<<endl;
-	int count=0;
-	FOR(i,10){
-		FOR(j,10){
-			// cerr<<i<<j<<"   ";
-			if(DP[i][j] !=0){
-				// cout<<" " <<0<<" ";
-				continue;
+	int count = 0;
+	// FOR(i,10){
+	// 	memset(done[i],0,10*sizeof(int));
+	// }
+	// FOR(i,10){
+	// 	FOR(j,10){
+			// if(done[i][j]){
+			// 	continue;
+			// }
+			bfs(0);
+			bfs(1);
+			FOR(i,10){
+				FOR(j,10){
+					if(territory1[0][i][j]>territory1[1][i][j]){
+						count--;
+					}
+					if(territory1[1][i][j]>territory1[0][i][j]){
+						count++;
+					}
+				}
 			}
-			int a1= bfs(pos(i,j), 0);
-			int a2= bfs(pos(i,j), 1);
-			if(a1==-1 && a2==-1){
-				// cout<<" " <<0<<" ";
-				continue;
-			}
-			if(a1>a2){
-				count--;
-				// cout<<""<<-1<<" ";
-			}
-			else if(a1<a2){
-				count++;
-				// cout<<" "<<1<<" ";
-			}
-			else{
-				// cout<<" "<<0<<" ";
-			}
-		}
-	}
 	return count;
+			// cerr<<i<<j<<"   ";
+			// if(DP[i][j] !=0){
+			// 	// cout<<" " <<0<<" ";
+			// 	continue;
+			// }
+			// int a1= bfs(pos(i,j), 0);
+			// int a2= bfs(pos(i,j), 1);
+			// if(a1==-1 && a2==-1){
+			// 	// cout<<" " <<0<<" ";
+			// 	continue;
+			// }
+			// if(a1>a2){
+			// 	count = count - 1.0;
+			// 	// cout<<""<<-1<<" ";
+			// }
+			// else if(a1<a2){
+			// 	count++;
+			// 	// cout<<" "<<1<<" ";
+			// }
+			// else{
+			// 	count  = count+0.2;
+			// 	// cout<<" "<<0<<" ";
+			// }
+	// 	}
+	// }
+	// return count;
 }
 
 
@@ -346,6 +375,12 @@ void implement_step(struct step m,int player)
 	DP[m.old_pos.x][m.old_pos.y]=0;
 	DP[m.new_pos.x][m.new_pos.y]=player;
 	DP[m.arrow.x][m.arrow.y]=-1;
+	FOR(i,4){
+		if(queen[player-1][i]==m.old_pos){
+			queen[player-1][i] = m.new_pos;
+			break;
+		}
+	}
 }
 
 void unimplement_step(struct step m,int player)
@@ -353,7 +388,12 @@ void unimplement_step(struct step m,int player)
 	DP[m.old_pos.x][m.old_pos.y]=player;
 	DP[m.new_pos.x][m.new_pos.y]=0;
 	DP[m.arrow.x][m.arrow.y]=0;
-
+	FOR(i,4){
+		if(queen[player-1][i]==m.new_pos){
+			queen[player-1][i] = m.old_pos;
+			break;
+		}
+	}
 }
 
 
@@ -460,6 +500,14 @@ int main(){
 	int qcount1=0;
 	int qcount2=0;
 	int arrows_cnt=0;
+	territory1 = (int***)malloc(sizeof(int**)*2);
+	FOR(i,2){
+		territory1[i] = (int**)malloc(sizeof(int*)*10);
+		FOR(j,10){
+			territory1[i][j] = (int*)malloc(sizeof(int)*10);
+		}
+	}
+
 	FOR(i,10){
 		FOR(j,10){
 			scanf("%d",&DP[i][j]);
