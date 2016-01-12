@@ -5,6 +5,7 @@
 #include <iostream>
 #include <limits.h>
 #include <string.h>
+#include <ctime>
 using namespace std;
 
 #define FOR(i,n) for(int i=0;i<n;i++)
@@ -320,9 +321,9 @@ std::vector<pos> max_limit(pos q){
 	std::vector<pos> limits;
 	pos p =  pos(q.x,q.y);
 	//cerr<<p.x<<" "<<p.y<<"ADS"<<endl;
-	int stepsize = 5;	
+	int stepsize;	
 	if(arrows_cnt<=30)
-		stepsize=5;
+		stepsize=10;
 	else
 		stepsize=5;
 	int a[3]={1,0,-1};
@@ -344,12 +345,9 @@ std::vector<pos> max_limit(pos q){
 
 std::vector<step> list_step(int player){
 	std::vector<step> valid;
-	int stepsize=3;
-	if(arrows_cnt<=10){
-		stepsize = 3;
-	}
+	int stepsize;
 	if(arrows_cnt<=30)
-		stepsize=7;
+		stepsize=10;
 	else
 		stepsize=7;
 	int queenid=-1;
@@ -433,6 +431,8 @@ double utility()
 		return mobility()+3.0*territory();
 }
 
+vector<step> curbestmoves;
+
 double minval(double,double,int,int);
 
 double maxval(double alpha, double beta,int depth,int player)
@@ -452,16 +452,30 @@ double maxval(double alpha, double beta,int depth,int player)
 			// cerr << "I :"<< i << endl;
 			implement_step(valid_steps[i],player);
 			double val=minval(alpha,beta,depth-1,(player+1)%2+2*(player%2));
-			if(val>curbest)
-				curbestind=i;
+			//cout << curbest << " "<< val << endl;
+			if(val>curbest && depth==DEPTH)
+			{
+				curbestmoves.clear();
+				curbestmoves.push_back(valid_steps[i]);
+				//cout << "added"<< endl;
+			}
+			if(val==curbest && depth==DEPTH)
+			{
+				curbestmoves.push_back(valid_steps[i]);
+			}
 			curbest=max(val,curbest);
 			unimplement_step(valid_steps[i],player);
 			alpha=max(alpha,val);
-			if(alpha>beta)
+			if(alpha>=beta && depth==DEPTH)
 			{
-				global_step.old_pos=valid_steps[i].old_pos;
-				global_step.new_pos=valid_steps[i].new_pos;
-				global_step.arrow=valid_steps[i].arrow;
+				int ind=rand()%curbestmoves.size();
+				global_step.old_pos=curbestmoves[ind].old_pos;
+				global_step.new_pos=curbestmoves[ind].new_pos;
+				global_step.arrow= curbestmoves[ind].arrow;
+				return val;
+			}
+			if(alpha>=beta)
+			{
 				return val;
 			}
 		}
@@ -470,9 +484,10 @@ double maxval(double alpha, double beta,int depth,int player)
 		// print_step(valid_steps[curbestind]);
 		if(depth==DEPTH)
 		{
-			global_step.old_pos=valid_steps[curbestind].old_pos;
-			global_step.new_pos=valid_steps[curbestind].new_pos;
-			global_step.arrow=valid_steps[curbestind].arrow;
+			int ind=rand()%curbestmoves.size();
+			global_step.old_pos=curbestmoves[ind].old_pos;
+			global_step.new_pos=curbestmoves[ind].new_pos;
+			global_step.arrow= curbestmoves[ind].arrow;
 		}
 		return curbest;
 	}
@@ -488,33 +503,43 @@ double minval(double alpha, double beta, int depth,int player)
 		vector<step> valid_steps=list_step(player);
 		double curbest=INT_MAX;
 		int s=valid_steps.size();
-		int curbestind=0;
 		for(int i=0;i<s;i++)
 		{
 			implement_step(valid_steps[i],player);
 			double val=maxval(alpha,beta,depth-1,(player+1)%2+2*(player%2));
-			if(curbest>val)
+			if(curbest>val && depth==DEPTH)
 			{
-				curbestind=i;
-				curbest=val;
-
+				curbestmoves.clear();
+				curbestmoves.push_back(valid_steps[i]);
 			}
+			if(curbest==val && depth==DEPTH)
+			{
+				curbestmoves.push_back(valid_steps[i]);
+			}
+			curbest=min(val,curbest);
 			beta=min(beta,val);
 			unimplement_step(valid_steps[i],player);
-			if(alpha>beta)
+			if(alpha>=beta && depth==DEPTH)
 			{
-				global_step.old_pos=valid_steps[i].old_pos;
-				global_step.new_pos=valid_steps[i].new_pos;
-				global_step.arrow=valid_steps[i].arrow;
+				int ind=rand()%curbestmoves.size();
+				global_step.old_pos=curbestmoves[ind].old_pos;
+				global_step.new_pos=curbestmoves[ind].new_pos;
+				global_step.arrow=curbestmoves[ind].arrow;
+				return val;
+
+			}
+			if(alpha>=beta)
+			{
 				return val;
 			}
 		}
 
 		if(depth==DEPTH)
 		{
-			global_step.old_pos=valid_steps[curbestind].old_pos;
-			global_step.new_pos=valid_steps[curbestind].new_pos;
-			global_step.arrow=valid_steps[curbestind].arrow;
+			int ind=rand()%curbestmoves.size();
+			global_step.old_pos=curbestmoves[ind].old_pos;
+			global_step.new_pos=curbestmoves[ind].new_pos;
+			global_step.arrow=curbestmoves[ind].arrow;
 		}
 		return curbest;
 
@@ -564,7 +589,7 @@ int main(){
 	// cout<<territory()<<endl;
 	// vector<step> a = list_step(1);
 	// FOR(i,a.size()){
-	// 	print_step(a[i]);
+	// 	print_ste`p(a[i]);
 	// }
 	// cerr<<"ADSADS"<<endl;
 	if(player==1)
@@ -574,6 +599,6 @@ int main(){
 	printf("%d %d\n",global_step.old_pos.x,global_step.old_pos.y);
 	printf("%d %d\n",global_step.new_pos.x,global_step.new_pos.y);
 	printf("%d %d\n",global_step.arrow.x,global_step.arrow.y);
-	printf("%d %d\n",1,1);
+	printf("%d %d\n",1,4);
 	return 0;
 }
