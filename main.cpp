@@ -320,9 +320,9 @@ std::vector<pos> max_limit(pos q){
 	std::vector<pos> limits;
 	pos p =  pos(q.x,q.y);
 	//cerr<<p.x<<" "<<p.y<<"ADS"<<endl;
-	int stepsize = 5;	
+	int stepsize;	
 	if(arrows_cnt<=30)
-		stepsize=5;
+		stepsize=10;
 	else
 		stepsize=5;
 	int a[3]={1,0,-1};
@@ -344,12 +344,9 @@ std::vector<pos> max_limit(pos q){
 
 std::vector<step> list_step(int player){
 	std::vector<step> valid;
-	int stepsize=3;
-	if(arrows_cnt<=10){
-		stepsize = 3;
-	}
+	int stepsize;
 	if(arrows_cnt<=30)
-		stepsize=7;
+		stepsize = 10;
 	else
 		stepsize=7;
 	int queenid=-1;
@@ -574,6 +571,6 @@ int main(){
 	printf("%d %d\n",global_step.old_pos.x,global_step.old_pos.y);
 	printf("%d %d\n",global_step.new_pos.x,global_step.new_pos.y);
 	printf("%d %d\n",global_step.arrow.x,global_step.arrow.y);
-	printf("%d %d\n",1,1);
+	printf("%d %d\n",1,10);
 	return 0;
 }
