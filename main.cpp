@@ -354,7 +354,7 @@ std::vector<step> list_step(int player){
 		stepsize=7;
 	int queenid=-1;
 	int i = 3;
-/*	if(arrows_cnt<=20){
+/*	if(arrows_cnt<=8){
 		queenid = (arrows_cnt/2)%4;
 		i = queenid;
 		}
@@ -425,9 +425,9 @@ void unimplement_step(struct step m,int player)
 
 double utility()
 {
-	if(arrows_cnt<=25)
+	if(arrows_cnt<=15)
 		return 1.0*territory()+1.0*mobility();
-	else if(arrows_cnt>26 && arrows_cnt<40)
+	else if(arrows_cnt>16 && arrows_cnt<40)
 		return 1.0*mobility()+2.0*territory();
 	else
 		return mobility()+3.0*territory();
@@ -574,5 +574,6 @@ int main(){
 	printf("%d %d\n",global_step.old_pos.x,global_step.old_pos.y);
 	printf("%d %d\n",global_step.new_pos.x,global_step.new_pos.y);
 	printf("%d %d\n",global_step.arrow.x,global_step.arrow.y);
+	printf("%d %d\n",1,1);
 	return 0;
 }
