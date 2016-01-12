@@ -347,7 +347,7 @@ std::vector<step> list_step(int player){
 	std::vector<step> valid;
 	int stepsize;
 	if(arrows_cnt<=30)
-		stepsize=10;
+		stepsize = 10;
 	else
 		stepsize=7;
 	int queenid=-1;
@@ -549,6 +549,7 @@ double minval(double alpha, double beta, int depth,int player)
 
 
 int main(){
+	srand(std::time(0));
 	int player;
 	int qcount1=0;
 	int qcount2=0;
