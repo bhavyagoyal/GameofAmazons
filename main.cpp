@@ -13,7 +13,6 @@ using namespace std;
 #define MAX(a,b) ( (a) > (b) ? (a) : (b))
 #define MIN(a,b) ( (a) < (b) ? (a) : (b))
 int DEPTH=1;
-int numplayer;
 
 struct pos {
     int x;int y;
@@ -223,7 +222,7 @@ double territory(){
 						// cout<<" " <<1<<"   ";
 					}
 					else if(territory1[1][i][j] == territory1[0][i][j] && territory1[0][i][j]!=INT_MAX ){
-						count = count+0.3*(2.0*numplayer-3.0);
+						count = count+0.5;
 						// cout<<" " <<0.2<<" ";
 					}
 					else{
@@ -551,6 +550,7 @@ double minval(double alpha, double beta, int depth,int player)
 
 int main(){
 	srand(std::time(0));
+	int player;
 	int qcount1=0;
 	int qcount2=0;
 	territory1 = (int***)malloc(sizeof(int**)*2);
@@ -585,7 +585,7 @@ int main(){
 	// 	cout<<queen[1][j].x<<" "<<queen[1][j].y<<endl; 
 	// }
 	// cout<<"Now"<<endl;
-	scanf("%d",&numplayer);
+	scanf("%d",&player);
 	// cout<<"Player"<<player<<endl;
 	// cout<<territory()<<endl;
 	// vector<step> a = list_step(1);
@@ -593,7 +593,7 @@ int main(){
 	// 	print_ste`p(a[i]);
 	// }
 	// cerr<<"ADSADS"<<endl;
-	if(numplayer==1)
+	if(player==1)
 		maxval(INT_MIN,INT_MAX,DEPTH,1);
 	else
 		minval(INT_MIN,INT_MAX,DEPTH,2);
