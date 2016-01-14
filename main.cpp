@@ -36,6 +36,7 @@ step global_step;
 int arrows_cnt=0;
 int ***territory1;
 
+int we=0;
 
 void bfs(int startplay){
 	int visited[10][10];
@@ -188,7 +189,7 @@ void bfs(int startplay){
 	// }
 }
 
-double territory(){
+double territory(int player){
 	// cout<<"territory"<<endl;
 	double count = 0.0;
 	// FOR(i,10){
@@ -203,26 +204,26 @@ double territory(){
 			bfs(1);
 			FOR(i,10){
 				FOR(j,10){
-					if(territory1[0][i][j]>territory1[1][i][j]){
-						if(territory1[0][i][j]==INT_MAX){
-							count = count - 4.0;
+					if(territory1[player-1][i][j]>territory1[2-player][i][j]){
+						if(territory1[player-1][i][j]==INT_MAX){
+							count = count - 5.0;
 						}
 						else{
-							count = count - (territory1[0][i][j])+(territory1[1][i][j]);
+							count = count - (territory1[player-1][i][j])+(territory1[2-player][i][j]);
 						}
 						// cout<<" " <<2<<"   ";
 					}
-					else if(territory1[1][i][j]>territory1[0][i][j]){
-						if(territory1[1][i][j]==INT_MAX){
-							count = count + 4.0;
+					else if(territory1[2-player][i][j]>territory1[player-1][i][j]){
+						if(territory1[2-player][i][j]==INT_MAX){
+							count = count + 3.0;
 						}
 						else{
-							count = count - (territory1[0][i][j])+(territory1[1][i][j]);
+							count = count - (territory1[player-1][i][j])+(territory1[2-player][i][j]);
 						}
 						// cout<<" " <<1<<"   ";
 					}
-					else if(territory1[1][i][j] == territory1[0][i][j] && territory1[0][i][j]!=INT_MAX ){
-						count = count+0.5;
+					else if(territory1[2-player][i][j] == territory1[player-1][i][j] && territory1[player-1][i][j]!=INT_MAX ){
+						count = count-0.5;
 						// cout<<" " <<0.2<<" ";
 					}
 					else{
@@ -231,46 +232,22 @@ double territory(){
 				}
 				// cout<<endl;
 			}
+			// cout << "exit terr"<< endl;
 	return count;
-			// cerr<<i<<j<<"   ";
-			// if(DP[i][j] !=0){
-			// 	// cout<<" " <<0<<" ";
-			// 	continue;
-			// }
-			// int a1= bfs(pos(i,j), 0);
-			// int a2= bfs(pos(i,j), 1);
-			// if(a1==-1 && a2==-1){
-			// 	// cout<<" " <<0<<" ";
-			// 	continue;
-			// }
-			// if(a1>a2){
-			// 	count = count - 1.0;
-			// 	// cout<<""<<-1<<" ";
-			// }
-			// else if(a1<a2){
-			// 	count++;
-			// 	// cout<<" "<<1<<" ";
-			// }
-			// else{
-			// 	count  = count+0.2;
-			// 	// cout<<" "<<0<<" ";
-			// }
-	// 	}
-	// }
-	// return count;
 }
 
 
-double mobility(){
+double mobility(int player){
 	// cerr<<"enter"<<endl;
 	double count=0.0;
 	double sign=1.0;
+	// int player_order[2]={player,3-player};
 	FOR(r,2){
 		FOR(t,4){
-			// cerr<<"enter"<<r<<" " <<t<<endl;
+			 // cerr<<"enter"<<r<<" " <<t<<endl;
 			int i=queen[r][t].x;
 			int j=queen[r][t].y;
-			if(r==0){
+			if(r== (player-1)){
 				sign = 0.75;
 			}
 			else{
@@ -292,9 +269,11 @@ double mobility(){
 				if(j>0){
 					b.push_back(-1);
 				}
+				// cout << "DP val "<< DP[i][j]<< " x "<< i << " y " << j << endl;
 				FOR(k,a.size()){
 					FOR(l,b.size()){
 						int x=i+a[k],y=j+b[l];
+
 						while(x>=0 && x<=9 && y>=0 && y<=9 && DP[x][y]==0){
 							count = count+sign;
 							x+=a[k];
@@ -304,6 +283,7 @@ double mobility(){
 				}
 		}
 	}
+	// cout << "exit mobility"<< endl;
 	// cerr<<"exit"<<endl;
 	// FOR(i,10){
 	// 	FOR(j,10){
@@ -411,6 +391,8 @@ std::vector<step> list_step(int player){
 
 void implement_step(struct step m,int player)
 {
+	// cout << "implementing ";
+	// print_step(m);
 	DP[m.old_pos.x][m.old_pos.y]=0;
 	DP[m.new_pos.x][m.new_pos.y]=player;
 	DP[m.arrow.x][m.arrow.y]=-1;
@@ -424,26 +406,29 @@ void implement_step(struct step m,int player)
 
 void unimplement_step(struct step m,int player)
 {
+	DP[m.arrow.x][m.arrow.y]=0;
 	DP[m.old_pos.x][m.old_pos.y]=player;
 	DP[m.new_pos.x][m.new_pos.y]=0;
-	DP[m.arrow.x][m.arrow.y]=0;
 	FOR(i,4){
 		if(queen[player-1][i]==m.new_pos){
 			queen[player-1][i] = m.old_pos;
 			break;
 		}
 	}
+	// cout << "unimplementing ";
+	// print_step(m);
 }
 
 
 double utility()
 {
+	// cout << "hehe"<< endl;
 	if(arrows_cnt<=15)
-		return 1.0*territory(player)+1.0*mobility(player);
+		return 1.0*territory(we)+1.0*mobility(we);
 	else if(arrows_cnt>16 && arrows_cnt<40)
-		return 1.0*mobility(player)+2.0*territory(player);
+		return 1.0*mobility(we)+2.0*territory(we);
 	else
-		return mobility(player)+3.0*territory(player);
+		return mobility(we)+3.0*territory(we);
 }
 
 vector<step> curbestmoves;
@@ -454,7 +439,7 @@ double maxval(double alpha, double beta,int depth,int player)
 {
 	if(depth==0)
 	{
-		return utility(player);
+		return utility();
 	}
 	else
 	{
@@ -466,7 +451,7 @@ double maxval(double alpha, double beta,int depth,int player)
 		{
 			// cerr << "I :"<< i << endl;
 			implement_step(valid_steps[i],player);
-			double val=minval(alpha,beta,depth-1,(player+1)%2+2*(player%2));
+			double val=minval(alpha,beta,depth-1,3-player);
 			//cout << curbest << " "<< val << endl;
 			if(val>curbest && depth==DEPTH)
 			{
@@ -512,7 +497,7 @@ double maxval(double alpha, double beta,int depth,int player)
 double minval(double alpha, double beta, int depth,int player)
 {
 	if(depth==0)
-		return utility(player);
+		return utility();
 	else
 	{
 		vector<step> valid_steps=list_step(player);
@@ -521,7 +506,7 @@ double minval(double alpha, double beta, int depth,int player)
 		for(int i=0;i<s;i++)
 		{
 			implement_step(valid_steps[i],player);
-			double val=maxval(alpha,beta,depth-1,(player+1)%2+2*(player%2));
+			double val=maxval(alpha,beta,depth-1,3-player);
 			if(curbest>val && depth==DEPTH)
 			{
 				curbestmoves.clear();
@@ -601,17 +586,18 @@ int main(){
 	// }
 	// cout<<"Now"<<endl;
 	scanf("%d",&player);
+	we=player;
 	// cout<<"Player"<<player<<endl;
-	// cout<<territory()<<endl;
+	// cout<<territory(player)<<endl;
 	// vector<step> a = list_step(1);
 	// FOR(i,a.size()){
 	// 	print_ste`p(a[i]);
 	// }
 	// cerr<<"ADSADS"<<endl;
-	if(player==1)
-		maxval(INT_MIN,INT_MAX,DEPTH,1);
-	else
-		maxval(INT_MIN,INT_MAX,DEPTH,2);
+//	if(player==1)
+//		maxval(INT_MIN,INT_MAX,DEPTH,1);
+//	else
+	maxval(INT_MIN,INT_MAX,DEPTH,player);
 	printf("%d %d\n",global_step.old_pos.x,global_step.old_pos.y);
 	printf("%d %d\n",global_step.new_pos.x,global_step.new_pos.y);
 	printf("%d %d\n",global_step.arrow.x,global_step.arrow.y);
