@@ -23,6 +23,8 @@ struct pos {
     }
 };
 
+pos arrow_steps[40];
+int arrowstepscount=0;
 
 struct step{
 	pos old_pos,new_pos,arrow;
@@ -36,6 +38,7 @@ step global_step;
 int arrows_cnt=0;
 int ***territory1;
 
+int we=0;
 
 void bfs(int startplay){
 	int visited[10][10];
@@ -188,7 +191,7 @@ void bfs(int startplay){
 	// }
 }
 
-double territory(){
+double territory(int player){
 	// cout<<"territory"<<endl;
 	double count = 0.0;
 	// FOR(i,10){
@@ -203,26 +206,26 @@ double territory(){
 			bfs(1);
 			FOR(i,10){
 				FOR(j,10){
-					if(territory1[0][i][j]>territory1[1][i][j]){
-						if(territory1[0][i][j]==INT_MAX){
-							count = count - 4.0;
+					if(territory1[player-1][i][j]>territory1[2-player][i][j]){
+						if(territory1[player-1][i][j]==INT_MAX){
+							count = count - 5.0;
 						}
 						else{
-							count = count - (territory1[0][i][j])+(territory1[1][i][j]);
+							count = count - (territory1[player-1][i][j])+(territory1[2-player][i][j]);
 						}
 						// cout<<" " <<2<<"   ";
 					}
-					else if(territory1[1][i][j]>territory1[0][i][j]){
-						if(territory1[1][i][j]==INT_MAX){
-							count = count + 4.0;
+					else if(territory1[2-player][i][j]>territory1[player-1][i][j]){
+						if(territory1[2-player][i][j]==INT_MAX){
+							count = count + 3.0;
 						}
 						else{
-							count = count - (territory1[0][i][j])+(territory1[1][i][j]);
+							count = count - (territory1[player-1][i][j])+(territory1[2-player][i][j]);
 						}
 						// cout<<" " <<1<<"   ";
 					}
-					else if(territory1[1][i][j] == territory1[0][i][j] && territory1[0][i][j]!=INT_MAX ){
-						count = count+0.5;
+					else if(territory1[2-player][i][j] == territory1[player-1][i][j] && territory1[player-1][i][j]!=INT_MAX ){
+						count = count-0.5;
 						// cout<<" " <<0.2<<" ";
 					}
 					else{
@@ -231,46 +234,22 @@ double territory(){
 				}
 				// cout<<endl;
 			}
+			// cout << "exit terr"<< endl;
 	return count;
-			// cerr<<i<<j<<"   ";
-			// if(DP[i][j] !=0){
-			// 	// cout<<" " <<0<<" ";
-			// 	continue;
-			// }
-			// int a1= bfs(pos(i,j), 0);
-			// int a2= bfs(pos(i,j), 1);
-			// if(a1==-1 && a2==-1){
-			// 	// cout<<" " <<0<<" ";
-			// 	continue;
-			// }
-			// if(a1>a2){
-			// 	count = count - 1.0;
-			// 	// cout<<""<<-1<<" ";
-			// }
-			// else if(a1<a2){
-			// 	count++;
-			// 	// cout<<" "<<1<<" ";
-			// }
-			// else{
-			// 	count  = count+0.2;
-			// 	// cout<<" "<<0<<" ";
-			// }
-	// 	}
-	// }
-	// return count;
 }
 
 
-double mobility(){
+double mobility(int player){
 	// cerr<<"enter"<<endl;
 	double count=0.0;
 	double sign=1.0;
+	// int player_order[2]={player,3-player};
 	FOR(r,2){
 		FOR(t,4){
-			// cerr<<"enter"<<r<<" " <<t<<endl;
+			 // cerr<<"enter"<<r<<" " <<t<<endl;
 			int i=queen[r][t].x;
 			int j=queen[r][t].y;
-			if(r==0){
+			if(r== (player-1)){
 				sign = 0.75;
 			}
 			else{
@@ -292,9 +271,11 @@ double mobility(){
 				if(j>0){
 					b.push_back(-1);
 				}
+				// cout << "DP val "<< DP[i][j]<< " x "<< i << " y " << j << endl;
 				FOR(k,a.size()){
 					FOR(l,b.size()){
 						int x=i+a[k],y=j+b[l];
+
 						while(x>=0 && x<=9 && y>=0 && y<=9 && DP[x][y]==0){
 							count = count+sign;
 							x+=a[k];
@@ -304,6 +285,7 @@ double mobility(){
 				}
 		}
 	}
+	// cout << "exit mobility"<< endl;
 	// cerr<<"exit"<<endl;
 	// FOR(i,10){
 	// 	FOR(j,10){
@@ -332,9 +314,11 @@ void print_pos(pos a){
   cerr<<a.x<<" "<<a.y<<endl;
 }
 
-std::vector<pos> max_limit(pos q){
-	std::vector<pos> limits;
-	pos p =  pos(q.x,q.y);
+void max_limit(pos q){
+	arrowstepscount=0;
+	int x,y;
+	// std::vector<pos> limits;
+	// pos p =  pos(q.x,q.y);
 	//cerr<<p.x<<" "<<p.y<<"ADS"<<endl;
 	int stepsize;	
 	if(arrows_cnt<=30)
@@ -345,16 +329,18 @@ std::vector<pos> max_limit(pos q){
 	FOR(k,3){
 		FOR(l,3){
 		for(int m=1;m<=stepsize;m++){
-			p.x = m*a[k]+q.x;
-			p.y = m*a[l]+q.y;
-			if(p.x<=9 && p.x>=0 && p.y<=9 && p.y>=0 && DP[p.x][p.y]==0)
-				limits.push_back(p);
-			else
-				break;
+			x = m*a[k]+q.x;
+			y = m*a[l]+q.y;
+			if(x<=9 && x>=0 && y<=9 && y>=0 && DP[x][y]==0){
+				arrow_steps[arrowstepscount].x =x;
+				arrow_steps[arrowstepscount].y =y;
+				arrowstepscount++;
+			}
+			else{break;}
 			}
 		}
 	}
-	return limits;
+	return;
 }
 
 
@@ -389,12 +375,12 @@ std::vector<step> list_step(int player){
 				{	
 					DP[mystep.new_pos.x][mystep.new_pos.y] = player;
 					DP[mystep.old_pos.x][mystep.old_pos.y] = 0;
-					vector<pos> arrows = max_limit(mystep.new_pos);
+					max_limit(mystep.new_pos);
 					DP[mystep.new_pos.x][mystep.new_pos.y] = 0;
 					DP[mystep.old_pos.x][mystep.old_pos.y] = player;
 					// cerr<<"SIZE:"<<arrows.size()<<endl;
-					FOR(j,arrows.size()){
-						mystep.arrow = arrows[j];
+					FOR(j,arrowstepscount){
+						mystep.arrow = arrow_steps[j];
 						valid.push_back(mystep);
 					}
 				}
@@ -411,6 +397,8 @@ std::vector<step> list_step(int player){
 
 void implement_step(struct step m,int player)
 {
+	// cout << "implementing ";
+	// print_step(m);
 	DP[m.old_pos.x][m.old_pos.y]=0;
 	DP[m.new_pos.x][m.new_pos.y]=player;
 	DP[m.arrow.x][m.arrow.y]=-1;
@@ -424,26 +412,29 @@ void implement_step(struct step m,int player)
 
 void unimplement_step(struct step m,int player)
 {
+	DP[m.arrow.x][m.arrow.y]=0;
 	DP[m.old_pos.x][m.old_pos.y]=player;
 	DP[m.new_pos.x][m.new_pos.y]=0;
-	DP[m.arrow.x][m.arrow.y]=0;
 	FOR(i,4){
 		if(queen[player-1][i]==m.new_pos){
 			queen[player-1][i] = m.old_pos;
 			break;
 		}
 	}
+	// cout << "unimplementing ";
+	// print_step(m);
 }
 
 
 double utility()
 {
+	// cout << "hehe"<< endl;
 	if(arrows_cnt<=15)
-		return 1.0*territory()+1.0*mobility();
+		return 1.0*territory(we)+1.0*mobility(we);
 	else if(arrows_cnt>16 && arrows_cnt<40)
-		return 1.0*mobility()+2.0*territory();
+		return 1.0*mobility(we)+2.0*territory(we);
 	else
-		return mobility()+3.0*territory();
+		return mobility(we)+3.0*territory(we);
 }
 
 vector<step> curbestmoves;
@@ -466,7 +457,7 @@ double maxval(double alpha, double beta,int depth,int player)
 		{
 			// cerr << "I :"<< i << endl;
 			implement_step(valid_steps[i],player);
-			double val=minval(alpha,beta,depth-1,(player+1)%2+2*(player%2));
+			double val=minval(alpha,beta,depth-1,3-player);
 			//cout << curbest << " "<< val << endl;
 			if(val>curbest && depth==DEPTH)
 			{
@@ -521,7 +512,7 @@ double minval(double alpha, double beta, int depth,int player)
 		for(int i=0;i<s;i++)
 		{
 			implement_step(valid_steps[i],player);
-			double val=maxval(alpha,beta,depth-1,(player+1)%2+2*(player%2));
+			double val=maxval(alpha,beta,depth-1,3-player);
 			if(curbest>val && depth==DEPTH)
 			{
 				curbestmoves.clear();
@@ -593,7 +584,7 @@ int main(){
 			}
 		}
 	}
-	if(arrows_cnt>30)
+	if(arrows_cnt>=20)
 		DEPTH=2;
 	// FOR(j,4){
 	// 	cout<<queen[0][j].x<<" "<<queen[0][j].y<<endl; 
@@ -601,17 +592,18 @@ int main(){
 	// }
 	// cout<<"Now"<<endl;
 	scanf("%d",&player);
+	we=player;
 	// cout<<"Player"<<player<<endl;
-	// cout<<territory()<<endl;
+	// cout<<territory(player)<<endl;
 	// vector<step> a = list_step(1);
 	// FOR(i,a.size()){
 	// 	print_ste`p(a[i]);
 	// }
 	// cerr<<"ADSADS"<<endl;
-	if(player==1)
-		maxval(INT_MIN,INT_MAX,DEPTH,1);
-	else
-		minval(INT_MIN,INT_MAX,DEPTH,2);
+//	if(player==1)
+//		maxval(INT_MIN,INT_MAX,DEPTH,1);
+//	else
+	maxval(INT_MIN,INT_MAX,DEPTH,player);
 	printf("%d %d\n",global_step.old_pos.x,global_step.old_pos.y);
 	printf("%d %d\n",global_step.new_pos.x,global_step.new_pos.y);
 	printf("%d %d\n",global_step.arrow.x,global_step.arrow.y);
