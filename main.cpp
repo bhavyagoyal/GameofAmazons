@@ -424,11 +424,11 @@ void unimplement_step(struct step m,int player)
 double utility()
 {
 	if(arrows_cnt<=15)
-		return 1.0*territory()+1.0*mobility();
+		return 1.0*territory(player)+1.0*mobility(player);
 	else if(arrows_cnt>16 && arrows_cnt<40)
-		return 1.0*mobility()+2.0*territory();
+		return 1.0*mobility(player)+2.0*territory(player);
 	else
-		return mobility()+3.0*territory();
+		return mobility(player)+3.0*territory(player);
 }
 
 vector<step> curbestmoves;
@@ -439,7 +439,7 @@ double maxval(double alpha, double beta,int depth,int player)
 {
 	if(depth==0)
 	{
-		return utility();
+		return utility(player);
 	}
 	else
 	{
@@ -497,7 +497,7 @@ double maxval(double alpha, double beta,int depth,int player)
 double minval(double alpha, double beta, int depth,int player)
 {
 	if(depth==0)
-		return utility();
+		return utility(player);
 	else
 	{
 		vector<step> valid_steps=list_step(player);
@@ -596,7 +596,7 @@ int main(){
 	if(player==1)
 		maxval(INT_MIN,INT_MAX,DEPTH,1);
 	else
-		minval(INT_MIN,INT_MAX,DEPTH,2);
+		maxval(INT_MIN,INT_MAX,DEPTH,2);
 	printf("%d %d\n",global_step.old_pos.x,global_step.old_pos.y);
 	printf("%d %d\n",global_step.new_pos.x,global_step.new_pos.y);
 	printf("%d %d\n",global_step.arrow.x,global_step.arrow.y);
