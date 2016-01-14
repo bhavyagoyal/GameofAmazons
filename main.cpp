@@ -262,17 +262,20 @@ double territory(){
 
 
 double mobility(){
-	double count=0;
-	double sign=1;
-	FOR(i,10){
-		FOR(j,10){
-			if(DP[i][j] == 1 ||  DP[i][j]==2){
-				if(DP[i][j] == 2){
-					sign = -1;
-				}
-				else{
-					sign=1.5;
-				}
+	// cerr<<"enter"<<endl;
+	double count=0.0;
+	double sign=1.0;
+	FOR(r,2){
+		FOR(t,4){
+			// cerr<<"enter"<<r<<" " <<t<<endl;
+			int i=queen[r][t].x;
+			int j=queen[r][t].y;
+			if(r==0){
+				sign = 0.75;
+			}
+			else{
+				sign=-1.0;
+			}
 				std::vector<int> a;
 				a.push_back(0);
 				if(i<9){
@@ -299,9 +302,21 @@ double mobility(){
 						}
 					}
 				}
-			}
 		}
 	}
+	// cerr<<"exit"<<endl;
+	// FOR(i,10){
+	// 	FOR(j,10){
+	// 		if(DP[i][j] == 1 ||  DP[i][j]==2){
+	// 			if(DP[i][j] == 2){
+	// 				sign = -1;
+	// 			}
+	// 			else{
+	// 				sign=1.5;
+	// 			}
+	// 		}
+	// 	}
+	// }
 	return count;
 }
 
