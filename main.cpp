@@ -218,19 +218,19 @@ void bfs(int startplay){
 												FOR(j,10){
 																if(territory1[player-1][i][j]>territory1[2-player][i][j]){
 																				if(territory1[player-1][i][j]==INT_MAX){
-																								count = count - 5.0;
+																								count = count - 6.0;
 																				}
 																				else{
-																								count = count - (territory1[player-1][i][j])+(territory1[2-player][i][j]);
+																								count = count - MIN(3.0,(territory1[player-1][i][j])+(territory1[2-player][i][j]));
 																				}
 																				// cout<<" " <<2<<"   ";
 																}
 																else if(territory1[2-player][i][j]>territory1[player-1][i][j]){
 																				if(territory1[2-player][i][j]==INT_MAX){
-																								count = count + 3.0;
+																								count = count + 5.0;
 																				}
 																				else{
-																								count = count - (territory1[player-1][i][j])+(territory1[2-player][i][j]);
+																								count = count - MIN(3.0,(territory1[player-1][i][j])+(territory1[2-player][i][j]));
 																				}
 																				// cout<<" " <<1<<"   ";
 																}
@@ -439,7 +439,7 @@ void bfs(int startplay){
 
 				double utility()
 				{
-								// cout << "hehe"<< endl;
+								 //cout <<  mobility(we) << "  "<< territory(we) <<" "<<1.0*mobility(we)+2.0*territory(we) << endl;
 								if(arrows_cnt<=15)
 												return 1.0*territory(we)+1.0*mobility(we);
 								else if(arrows_cnt>16 && arrows_cnt<40)
@@ -599,9 +599,12 @@ void bfs(int startplay){
 								{
 												vector<step> valid_steps=list_step(player);
 												double curbest=INT_MAX;
+										
 												int s=valid_steps.size();
 												for(int i=0;i<s;i++)
 												{
+																	//cout << "minval move " ;
+																	//print_step(valid_steps[i]);
 																implement_step(valid_steps[i],player);
 																double val=maxval(alpha,beta,depth-1,3-player);
 																if(curbest>val && depth==DEPTH)
