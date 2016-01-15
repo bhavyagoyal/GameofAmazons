@@ -6,6 +6,7 @@
 #include <limits.h>
 #include <string.h>
 #include <ctime>
+#include <algorithm>
 using namespace std;
 
 #define FOR(i,n) for(int i=0;i<n;i++)
@@ -360,6 +361,7 @@ std::vector<step> list_step(int player){
 */
 
 		while(i>=queenid&&i!=-1){
+		//cerr << "shiv"<< endl;
 		step mystep = step(queen[player-1][i],queen[player-1][i],queen[player-1][i]);
 		int m = mystep.old_pos.x;
 		int n = mystep.old_pos.y;
@@ -440,6 +442,82 @@ double utility()
 vector<step> curbestmoves;
 
 double minval(double,double,int,int);
+
+bool comparator(const pair<double,step> &p, const pair<double,step> &q)
+{
+	return p.first>q.first;
+}
+
+double maxval_vary(double alpha, double beta,int depth,int player)
+{
+	if(depth==0)
+	{
+		return utility();
+	}
+	else
+	{
+		//cerr<<"sadwdewfew"<< endl;
+		vector<step> valid_steps=list_step(player);
+		//cerr <<"wdhwhceoihcfeor"<< endl;
+		double curbest =INT_MIN;
+		int s=valid_steps.size();
+		int curbestind=0;
+		vector< pair<double,step> > moves;
+		for(int i=0;i<s;i++)
+		{
+			//ncerr << "eher"<< endl;
+			implement_step(valid_steps[i],player);
+			double val=minval(alpha,beta,depth-1,3-player);
+			unimplement_step(valid_steps[i],player);
+			moves.push_back(make_pair(val,valid_steps[i]));
+		}
+		sort(moves.begin(),moves.end(),comparator);
+		DEPTH=2;
+		depth=2;
+		int len=MIN(moves.size(),8);
+		for(int i=0;i<len;i++)
+		{
+			implement_step(moves[i].second,player);
+			double val=minval(alpha,beta,depth-1,3-player);
+			//cerr << curbest << " "<< val << endl;
+			if(val>curbest && depth==DEPTH)
+			{
+				curbestmoves.clear();
+				curbestmoves.push_back(moves[i].second);
+				//cout << "added"<< endl;
+			}
+			if(val==curbest && depth==DEPTH)
+			{
+				curbestmoves.push_back(moves[i].second);
+			}
+			curbest=max(val,curbest);
+			unimplement_step(moves[i].second,player);
+			alpha=max(alpha,val);
+			if(alpha>=beta && depth==DEPTH)
+			{
+				int ind=rand()%curbestmoves.size();
+				global_step.old_pos=curbestmoves[ind].old_pos;
+				global_step.new_pos=curbestmoves[ind].new_pos;
+				global_step.arrow= curbestmoves[ind].arrow;
+				return val;
+			}
+			if(alpha>=beta)
+			{
+				return val;
+			}
+
+		}
+		if(depth==DEPTH)
+		{
+			int ind=rand()%curbestmoves.size();
+			global_step.old_pos=curbestmoves[ind].old_pos;
+			global_step.new_pos=curbestmoves[ind].new_pos;
+			global_step.arrow= curbestmoves[ind].arrow;
+		}
+		return curbest;
+	}
+}
+
 
 double maxval(double alpha, double beta,int depth,int player)
 {
@@ -584,15 +662,30 @@ int main(){
 			}
 		}
 	}
-	if(arrows_cnt>=20)
+	scanf("%d",&player);
+	we=player;
+
+	if(arrows_cnt<=20)
+	{
+		DEPTH=1;
+		maxval_vary(INT_MIN,INT_MAX,DEPTH,player);
+	}
+	else if(arrows_cnt>=20 && arrows_cnt <45)
+	{
 		DEPTH=2;
+		maxval(INT_MIN,INT_MAX,DEPTH,player);
+	}
+
+	else
+	{
+		DEPTH=3;
+		maxval(INT_MIN,INT_MAX,DEPTH,player);
+	}
 	// FOR(j,4){
 	// 	cout<<queen[0][j].x<<" "<<queen[0][j].y<<endl; 
 	// 	cout<<queen[1][j].x<<" "<<queen[1][j].y<<endl; 
 	// }
 	// cout<<"Now"<<endl;
-	scanf("%d",&player);
-	we=player;
 	// cout<<"Player"<<player<<endl;
 	// cout<<territory(player)<<endl;
 	// vector<step> a = list_step(1);
@@ -603,7 +696,6 @@ int main(){
 //	if(player==1)
 //		maxval(INT_MIN,INT_MAX,DEPTH,1);
 //	else
-	maxval(INT_MIN,INT_MAX,DEPTH,player);
 	printf("%d %d\n",global_step.old_pos.x,global_step.old_pos.y);
 	printf("%d %d\n",global_step.new_pos.x,global_step.new_pos.y);
 	printf("%d %d\n",global_step.arrow.x,global_step.arrow.y);
