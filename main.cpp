@@ -8,7 +8,8 @@
 #include <ctime>
 #include <algorithm>
 using namespace std;
-
+#include <time.h>
+#include <sys/time.h>
 #define FOR(i,n) for(int i=0;i<n;i++)
 #define MOD 1000000009 
 #define MAX(a,b) ( (a) > (b) ? (a) : (b))
@@ -38,8 +39,16 @@ pos queen[2][4];
 step global_step;
 int arrows_cnt=0;
 int ***territory1;
-
+double begin_time;
 int we=0;
+
+double get_wall_time(){
+    struct timeval time;
+		if (gettimeofday(&time,NULL)){
+			return 0;
+		 }
+		return (double)time.tv_sec + (double)time.tv_usec * .000001;
+	}
 
 void bfs(int startplay){
 	int visited[10][10];
@@ -530,13 +539,17 @@ double maxval(double alpha, double beta,int depth,int player)
 		vector<step> valid_steps=list_step(player);
 		double curbest =INT_MIN;
 		int s=valid_steps.size();
+		//cout << "moves size " << s << endl;
 		int curbestind=0;
 		for(int i=0;i<s;i++)
 		{
-			// cerr << "I :"<< i << endl;
+			//cerr << "I :"<< i << endl;
+			if((get_wall_time()-begin_time)>0.9)
+				break;
 			implement_step(valid_steps[i],player);
 			double val=minval(alpha,beta,depth-1,3-player);
-			//cout << curbest << " "<< val << endl;
+			//cout << curbest << " "<< val <<" move ";
+			//print_step(valid_steps[i]);
 			if(val>curbest && depth==DEPTH)
 			{
 				curbestmoves.clear();
@@ -633,6 +646,7 @@ double minval(double alpha, double beta, int depth,int player)
 
 
 int main(){
+	begin_time=get_wall_time();
 	srand(std::time(0));
 	int player;
 	int qcount1=0;
@@ -670,7 +684,7 @@ int main(){
 		DEPTH=1;
 		maxval_vary(INT_MIN,INT_MAX,DEPTH,player);
 	}
-	else if(arrows_cnt>=20 && arrows_cnt <45)
+	else if(arrows_cnt>20 && arrows_cnt <60)
 	{
 		DEPTH=2;
 		maxval(INT_MIN,INT_MAX,DEPTH,player);
